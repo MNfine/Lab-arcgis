@@ -10,7 +10,7 @@ Bang anh xa ten truong chuan -> file logo:
 - Truong Dai hoc Nam Can Tho -> logo-truong-dai-hoc-nam-can-tho-inkythuatso-01-24-10-57-15.jpg
 - Truong Dai hoc Vo Truong Toan -> logo_hao_quang_chon_07_2007-1.jpg
 - Truong Dai hoc Bac Lieu -> logoBLUNI_8648350e-1989-4408-b863-53b1ecfa6108.png
-- Phan hieu Truong Dai hoc Binh Duong tai Ca Mau -> Logo-chinh.png
+- Phan hieu Truong Dai hoc Binh Duong tai Ca Mau -> phan_hieu_dai_hoc_binh_duong_tai_ca_mau_nobg.png
 - Truong Dai hoc An Giang - DHQG TP.HCM -> Dai_hoc_An_Giang.svg.png
 - Truong Dai hoc Dong Thap -> Đại_học_Đồng_Tháp.png
 - Phan hieu Dai hoc Kinh te TP Ho Chi Minh tai Vinh Long -> Logo_Phân_hiệu_Vĩnh_Long_(Tiếng_Anh)_(Chữ_xanh)_(1).png

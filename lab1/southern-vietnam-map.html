@@ -95,13 +95,18 @@
       const n = 5;
 
       const mergedAdminUnits = [
-        // TODO: Điền danh sách đơn vị hành chính sáp nhập theo định dạng mẫu.
-        // {
-        //   name: "Tên đơn vị",
-        //   components: ["Đơn vị cũ 1", "Đơn vị cũ 2"],
-        //   population: "~0",
-        //   area: "~0 km2"
-        // }
+        {
+          name: "Cà Mau",
+          components: ["Bạc Liêu", "Cà Mau"],
+          population: "~2.6 triệu (ước tính theo đơn vị cũ)",
+          area: "~7,942 km2"
+        },
+        {
+          name: "An Giang",
+          components: ["An Giang", "Kiên Giang"],
+          population: "~4.9 triệu (ước tính theo đơn vị cũ)",
+          area: "~9,888 km2"
+        }
       ];
 
       const mergedStats = {};
@@ -110,15 +115,136 @@
       });
 
       const allRoads = [
-        // TODO: Điền dữ liệu tuyến đường theo định dạng mẫu.
-        // {
-        //   name: "Tên tuyến",
-        //   type: "Quốc lộ/Cao tốc",
-        //   length: "~0 km",
-        //   rightofway: "0 m",
-        //   provinces: "Tỉnh A, Tỉnh B",
-        //   path: [[kinh_do, vi_do], [kinh_do, vi_do]]
-        // }
+        {
+          name: "Quốc lộ 91",
+          type: "Quốc lộ",
+          length: "~142 km",
+          rightofway: "20 - 30 m",
+          provinces: "Cần Thơ, An Giang",
+          path: [
+            [105.78, 10.05],
+            [105.75, 10.07],
+            [105.75, 10.07],
+            [105.72, 10.10],
+            [105.70, 10.10],
+            [105.69, 10.10],
+            [105.67, 10.11],
+            [105.64, 10.11],
+            [105.63, 10.11],
+            [105.62, 10.11],
+            [105.61, 10.12],
+            [105.59, 10.13],
+            [105.61, 10.11],
+            [105.55, 10.17],
+            [105.55, 10.23],
+            [105.55, 10.26],
+            [105.53, 10.27],
+            [105.53, 10.27],
+            [105.53, 10.28],
+            [105.50, 10.31],
+            [105.49, 10.31],
+            [105.49, 10.32],
+            [105.49, 10.32],
+            [105.49, 10.32],
+            [105.48, 10.33],
+            [105.44, 10.38],
+            [105.42, 10.40],
+            [105.42, 10.41],
+            [105.39, 10.44],
+            [105.35, 10.45],
+            [105.34, 10.46],
+            [105.34, 10.47],
+            [105.34, 10.47],
+            [105.34, 10.47],
+            [105.34, 10.49],
+            [105.32, 10.50],
+            [105.32, 10.52],
+            [105.30, 10.53],
+            [105.29, 10.53],
+            [105.27, 10.56],
+            [105.21, 10.62],
+            [105.21, 10.63],
+            [105.20, 10.64],
+            [105.19, 10.66],
+            [105.18, 10.67],
+            [105.13, 10.70],
+            [105.12, 10.70],
+            [105.11, 10.70],
+            [105.08, 10.68],
+            [105.08, 10.68],
+            [105.07, 10.68],
+            [105.05, 10.66],
+            [105.00, 10.62],
+            [104.98, 10.61],
+            [104.96, 10.60],
+            [104.95, 10.60],
+            [104.94, 10.61],
+            [104.94, 10.60]
+          ]
+        },
+        {
+          name: "Cao tốc Trung Lương - Mỹ Thuận (CT.01)",
+          type: "Cao tốc",
+          length: "~51 km",
+          rightofway: "~24.75 m",
+          provinces: "Đồng Tháp, Vĩnh Long",
+          path: [
+            [105.83, 10.08],
+            [105.83, 10.08],
+            [105.83, 10.08],
+            [105.84, 10.10],
+            [105.85, 10.13],
+            [105.86, 10.16],
+            [105.89, 10.23],
+            [105.90, 10.24],
+            [105.91, 10.25],
+            [105.91, 10.27],
+            [105.91, 10.27],
+            [105.90, 10.28],
+            [105.90, 10.29],
+            [105.89, 10.29],
+            [105.89, 10.29],
+            [105.88, 10.31],
+            [105.88, 10.32],
+            [105.88, 10.32],
+            [105.88, 10.32],
+            [105.88, 10.32],
+            [105.89, 10.33],
+            [105.89, 10.33],
+            [105.89, 10.33],
+            [105.91, 10.34],
+            [105.92, 10.36],
+            [105.93, 10.36],
+            [106.03, 10.41],
+            [106.03, 10.41],
+            [106.06, 10.42],
+            [106.08, 10.42],
+            [106.09, 10.42],
+            [106.10, 10.42],
+            [106.12, 10.43],
+            [106.14, 10.42],
+            [106.20, 10.43],
+            [106.22, 10.43],
+            [106.25, 10.44],
+            [106.26, 10.44],
+            [106.28, 10.43],
+            [106.30, 10.44],
+            [106.31, 10.44],
+            [106.31, 10.44],
+            [106.32, 10.45],
+            [106.34, 10.50],
+            [106.34, 10.50],
+            [106.36, 10.54],
+            [106.38, 10.56],
+            [106.45, 10.63],
+            [106.46, 10.64],
+            [106.48, 10.66],
+            [106.52, 10.67],
+            [106.54, 10.67],
+            [106.56, 10.68],
+            [106.57, 10.68]
+          ]
+        }
       ];
 
       const allUniversities = [
@@ -132,6 +258,33 @@
         //   longitude: 0,
         //   latitude: 0
         // }
+        {
+          name: "Phân hiệu ĐHQG TP.HCM tại Bến Tre",
+          founded: "2017",
+          major: "Kỹ thuật xây dựng, Kỹ thuật điện, Quản trị dịch vụ du lịch và lữ hành, Công nghệ sau thu hoạch, Bảo dưỡng công nghiệp, Ngôn ngữ Anh, Đô thị học, Khoa học môi trường, Tài chính - Ngân hàng, Công nghệ thông tin ",
+          students: "~2,800",
+          location: "Vĩnh Long",
+          longitude: 106.359,
+          latitude: 10.270
+        },
+        {
+          name: "Phân hiệu Trường Đại học Bình Dương tại Cà Mau",
+          founded: "2006",
+          major: "Quản trị kinh doanh, Tài chính - Ngân hàng, Kế toán, Luật, CNTT - Trí tuệ nhân tạo, Dược học, Hóa dược, Logistics và Quản lý chuỗi cung ứng, Ngôn ngữ Anh, Nhật Bản học, Hàn Quốc học, Công nghệ thực phẩm, Công nghệ kỹ thuật điện - điện tử, Công nghệ kỹ thuật ô tô, Công nghệ kỹ thuật công trình xây dựng, Kiến trúc, Xã hội học",
+          students: "~5,000",
+          location: "Cà Mau",
+          longitude: 105.167,
+          latitude: 9.186
+        },
+        {
+          name: "Trường Đại học An Giang - ĐHQG TP.HCM",
+          founded: "1999",
+          major: "Sư phạm, Nông nghiệp - Tài nguyên thiên nhiên, Kinh tế - Quản trị kinh doanh, CNTT, Kỹ thuật - Công nghệ - Môi trường, Luật và Khoa học chính trị, Du lịch và văn hóa nghệ thuật, Ngoại ngữ",
+          students: "~10,500",
+          location: "An Giang",
+          longitude: 105.432,
+          latitude: 10.372
+        }
       ];
 
       function normalizeRoadPath(path) {
@@ -207,7 +360,8 @@
       const universitiesLayer = new GraphicsLayer({ title: "Trường đại học" });
 
       const provinceColors = {
-        // TODO: map màu theo tên đơn vị, ví dụ: "Tên đơn vị": [r, g, b, a]
+        "Cà Mau": [176, 224, 230, 0.35],
+        "An Giang": [152, 251, 152, 0.35]
       };
 
       function addProvinceGraphicsFromGeoJSON() {
@@ -315,7 +469,9 @@
 
       // Đặt logo trường tại thư mục ./assets/logos và ánh xạ tên trường ở đây.
       const universityLogos = {
-        // TODO: "Tên trường": "./assets/logos/ten-file-logo.png"
+        "Phân hiệu ĐHQG TP.HCM tại Bến Tre": "./assets/logos/ben-tre-quoc-gia_nobg.png",
+        "Phân hiệu Trường Đại học Bình Dương tại Cà Mau": "./assets/logos/phan_hieu_dai_hoc_binh_duong_tai_ca_mau_nobg.png",
+        "Trường Đại học An Giang - ĐHQG TP.HCM": "./assets/logos/Dai_hoc_An_Giang.svg_nobg.png"
       };
 
       function getUniversitySymbol(uniName) {
