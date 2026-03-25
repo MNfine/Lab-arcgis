@@ -1,0 +1,499 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>Bản đồ mẫu - hành chính, giao thông, đại học</title>
+  <link rel="stylesheet" href="https://js.arcgis.com/4.26/esri/themes/light/main.css" />
+  <script src="https://js.arcgis.com/4.26/"></script>
+  <script src="./southern-provinces-data.js"></script>
+  <style>
+    html,
+    body,
+    #viewDiv {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      font-family: Arial, sans-serif;
+    }
+
+    #panel {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      z-index: 10;
+      background: rgba(255, 255, 255, 0.96);
+      border-radius: 8px;
+      padding: 12px 14px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.16);
+      max-width: 360px;
+      line-height: 1.4;
+      font-size: 14px;
+    }
+
+    #panel h3 {
+      margin: 0 0 8px;
+      font-size: 16px;
+    }
+
+    #panel p {
+      margin: 5px 0;
+    }
+
+    #panel .src {
+      font-size: 12px;
+      color: #444;
+    }
+
+    #provinceStatus {
+      margin-top: 6px;
+      font-size: 13px;
+      color: #0b3d91;
+      font-weight: 600;
+    }
+
+    #hoverInfo {
+      position: absolute;
+      z-index: 20;
+      display: none;
+      pointer-events: none;
+      background: rgba(0, 0, 0, 0.78);
+      color: #fff;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 12px;
+      transform: translate(12px, -24px);
+      white-space: nowrap;
+    }
+  </style>
+</head>
+<body>
+  <div id="viewDiv"></div>
+  <div id="hoverInfo"></div>
+  <div id="panel">
+    <h3>Bản đồ mẫu</h3>
+    <p><b>Checklist:</b> Starter Map, Graphics, Popup, Picture Marker.</p>
+    <p><b>Đơn vị hành chính:</b> điền trong <b>mergedAdminUnits</b>.</p>
+    <p><b>2n đường + 2n trường:</b> sửa biến <b>n</b> trong code.</p>
+    <p class="src"><b>Nguồn ranh giới:</b> dữ liệu GeoJSON local hoặc API.</p>
+    <p class="src"><b>Nguồn thông tin:</b> điền theo dữ liệu nhóm.</p>
+    <p id="provinceStatus">Đang tải ranh giới...</p>
+  </div>
+
+  <script>
+    require([
+      "esri/Map",
+      "esri/views/MapView",
+      "esri/Graphic",
+      "esri/request",
+      "esri/geometry/Polygon",
+      "esri/geometry/geometryEngine",
+      "esri/layers/GraphicsLayer",
+      "esri/widgets/Locate"
+    ], function (Map, MapView, Graphic, esriRequest, Polygon, geometryEngine, GraphicsLayer, Locate) {
+      const n = 5;
+
+      const mergedAdminUnits = [
+        // TODO: Điền danh sách đơn vị hành chính sáp nhập theo định dạng mẫu.
+        // {
+        //   name: "Tên đơn vị",
+        //   components: ["Đơn vị cũ 1", "Đơn vị cũ 2"],
+        //   population: "~0",
+        //   area: "~0 km2"
+        // }
+      ];
+
+      const mergedStats = {};
+      mergedAdminUnits.forEach(function (u) {
+        mergedStats[u.name] = { population: u.population, area: u.area };
+      });
+
+      const allRoads = [
+        // TODO: Điền dữ liệu tuyến đường theo định dạng mẫu.
+        // {
+        //   name: "Tên tuyến",
+        //   type: "Quốc lộ/Cao tốc",
+        //   length: "~0 km",
+        //   rightofway: "0 m",
+        //   provinces: "Tỉnh A, Tỉnh B",
+        //   path: [[kinh_do, vi_do], [kinh_do, vi_do]]
+        // }
+      ];
+
+      const allUniversities = [
+        // TODO: Điền dữ liệu trường theo định dạng mẫu.
+        // {
+        //   name: "Tên trường",
+        //   founded: "Năm",
+        //   major: "Ngành đào tạo",
+        //   students: "~0",
+        //   location: "Tỉnh/TP",
+        //   longitude: 0,
+        //   latitude: 0
+        // }
+      ];
+
+      function normalizeRoadPath(path) {
+        if (!Array.isArray(path)) {
+          return [];
+        }
+
+        const normalized = [];
+        path.forEach(function (pt) {
+          if (!Array.isArray(pt) || pt.length < 2) {
+            return;
+          }
+
+          const lon = Number(pt[0]);
+          const lat = Number(pt[1]);
+          if (!Number.isFinite(lon) || !Number.isFinite(lat)) {
+            return;
+          }
+
+          const last = normalized[normalized.length - 1];
+          if (!last || last[0] !== lon || last[1] !== lat) {
+            normalized.push([lon, lat]);
+          }
+        });
+
+        return normalized;
+      }
+
+      const roads = allRoads
+        .slice(0, 2 * n)
+        .map(function (r) {
+          return {
+            name: r.name,
+            type: r.type,
+            length: r.length,
+            rightofway: r.rightofway,
+            provinces: r.provinces,
+            path: normalizeRoadPath(r.path)
+          };
+        })
+        .sort(function (a, b) {
+          return a.name.localeCompare(b.name, "vi");
+        });
+
+      const universities = allUniversities
+        .slice(0, 2 * n)
+        .sort(function (a, b) {
+          return a.name.localeCompare(b.name, "vi");
+        });
+      const requiredCount = 2 * n;
+
+      if (roads.length !== requiredCount || universities.length !== requiredCount) {
+        console.warn("Chưa đủ 2n dữ liệu. Cần", requiredCount, "tuyến và", requiredCount, "trường.");
+      }
+
+      // Starter Map
+      const map = new Map({ basemap: "streets-vector" });
+
+      const view = new MapView({
+        container: "viewDiv",
+        map,
+        center: [105.55, 9.95],
+        zoom: 7
+      });
+
+      view.popup.autoOpenEnabled = false;
+
+      const locateWidget = new Locate({ view: view });
+      view.ui.add(locateWidget, "top-left");
+
+      const provincesLayer = new GraphicsLayer({ title: "Đơn vị hành chính" });
+      const roadsLayer = new GraphicsLayer({ title: "Tuyến giao thông" });
+      const universitiesLayer = new GraphicsLayer({ title: "Trường đại học" });
+
+      const provinceColors = {
+        // TODO: map màu theo tên đơn vị, ví dụ: "Tên đơn vị": [r, g, b, a]
+      };
+
+      function addProvinceGraphicsFromGeoJSON() {
+        function addFeatures(features) {
+          const loadedUnits = {};
+
+          (features || []).forEach(function (f) {
+            const mergedName = f.properties.shapeName;
+            if (!mergedStats[mergedName]) {
+              return;
+            }
+            const componentNames = f.properties.components || mergedName;
+
+            const geo = f.geometry;
+            let polygons = [];
+            if (geo.type === "Polygon" && Array.isArray(geo.coordinates)) {
+              polygons = [geo.coordinates];
+            } else if (geo.type === "MultiPolygon" && Array.isArray(geo.coordinates)) {
+              polygons = geo.coordinates;
+            } else {
+              return;
+            }
+
+            loadedUnits[mergedName] = true;
+
+            const info = mergedStats[mergedName] || { population: "Đang cập nhật", area: "Đang cập nhật" };
+            const provinceColor = provinceColors[mergedName] || [52, 152, 219, 0.35];
+
+            const polygonGeometries = polygons.map(function (poly) {
+              return new Polygon({
+                rings: poly,
+                spatialReference: { wkid: 4326 }
+              });
+            });
+
+            const dissolvedGeometry = polygonGeometries.length > 1
+              ? geometryEngine.union(polygonGeometries)
+              : polygonGeometries[0];
+
+            provincesLayer.add(new Graphic({
+              geometry: dissolvedGeometry,
+              symbol: {
+                type: "simple-fill",
+                color: provinceColor,
+                outline: { color: [0, 76, 153], width: 2 }
+              },
+              attributes: {
+                name: mergedName,
+                component: componentNames,
+                population: info.population,
+                area: info.area
+              },
+              popupTemplate: {
+                title: "{name}",
+                content: "<b>Thành phần cũ:</b> {component}<br/><b>Dân số:</b> {population}<br/><b>Diện tích:</b> {area}"
+              }
+            }));
+          });
+
+          return Object.keys(loadedUnits).length;
+        }
+
+        if (window.SOUTHERN_PROVINCES_GEOJSON && Array.isArray(window.SOUTHERN_PROVINCES_GEOJSON.features)) {
+          const loadedCount = addFeatures(window.SOUTHERN_PROVINCES_GEOJSON.features);
+          return Promise.resolve({ source: "local", loadedCount: loadedCount });
+        }
+
+        return esriRequest("https://raw.githubusercontent.com/wmgeolab/geoBoundaries/9469f09592ced973a3448cf66b6100b741b64c0d/releaseData/gbOpen/VNM/ADM1/geoBoundaries-VNM-ADM1.geojson", {
+          responseType: "json"
+        }).then(function (response) {
+          const features = response.data.features || [];
+          const loadedCount = addFeatures(features);
+          return { source: "remote", loadedCount: loadedCount };
+        });
+      }
+
+      roads.forEach(function (r, index) {
+        roadsLayer.add(
+          new Graphic({
+            geometry: { type: "polyline", paths: [r.path] },
+            symbol: { type: "simple-line", color: [231, 76, 60, 0.95], width: 3 },
+            attributes: {
+              road_no: index + 1,
+              name: r.name,
+              type: r.type,
+              length: r.length,
+              rightofway: r.rightofway,
+              provinces: r.provinces
+            },
+            popupTemplate: {
+              title: "{name}",
+              content:
+                "<b>Số thứ tự:</b> Tuyến #{road_no}<br/>" +
+                "<b>Loại:</b> {type}<br/>" +
+                "<b>Chiều dài:</b> {length}<br/>" +
+                "<b>Lộ giới:</b> {rightofway}<br/>" +
+                "<b>Đi qua:</b> {provinces}"
+            }
+          })
+        );
+      });
+
+      const schoolIconSvg = "<svg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'><circle cx='24' cy='24' r='22' fill='#8fd3ff' stroke='#2b7bb9' stroke-width='2'/><path d='M24 10L10 17l14 7 14-7-14-7zm-9 11v11h18V21l-9 4-9-4zM22 24h4v8h-4z' fill='#ffffff'/></svg>";
+      const fallbackUniIcon = "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(schoolIconSvg);
+
+      // Đặt logo trường tại thư mục ./assets/logos và ánh xạ tên trường ở đây.
+      const universityLogos = {
+        // TODO: "Tên trường": "./assets/logos/ten-file-logo.png"
+      };
+
+      function getUniversitySymbol(uniName) {
+        return {
+          type: "picture-marker",
+          url: universityLogos[uniName] || fallbackUniIcon,
+          width: "32px",
+          height: "32px"
+        };
+      }
+
+      universities.forEach(function (u, index) {
+        universitiesLayer.add(
+          new Graphic({
+            geometry: { type: "point", longitude: u.longitude, latitude: u.latitude },
+            symbol: getUniversitySymbol(u.name),
+            attributes: {
+              uni_no: index + 1,
+              name: u.name,
+              founded: u.founded,
+              major: u.major,
+              students: u.students,
+              location: u.location
+            },
+            popupTemplate: {
+              title: "{name}",
+              content:
+                "<b>Số thứ tự:</b> Trường #{uni_no}<br/>" +
+                "<b>Tỉnh/TP:</b> {location}<br/>" +
+                "<b>Năm thành lập:</b> {founded}<br/>" +
+                "<b>Ngành đào tạo:</b> {major}<br/>" +
+                "<b>Số lượng sinh viên:</b> {students}"
+            }
+          })
+        );
+      });
+
+      map.addMany([provincesLayer, roadsLayer, universitiesLayer]);
+
+      function findNearestUniversityGraphic(event, tolerancePx) {
+        const maxDist = typeof tolerancePx === "number" ? tolerancePx : 20;
+        let nearest = null;
+        let minD2 = maxDist * maxDist;
+
+        universitiesLayer.graphics.forEach(function (g) {
+          const sp = view.toScreen(g.geometry);
+          if (!sp) {
+            return;
+          }
+          const dx = sp.x - event.x;
+          const dy = sp.y - event.y;
+          const d2 = dx * dx + dy * dy;
+          if (d2 <= minD2) {
+            minD2 = d2;
+            nearest = g;
+          }
+        });
+
+        return nearest;
+      }
+
+      // Ưu tiên popup theo thứ tự: trường đại học > tuyến đường > tỉnh.
+      view.on("click", function (event) {
+        const nearestUni = findNearestUniversityGraphic(event, 22);
+
+        Promise.all([
+          view.hitTest(event, { include: [universitiesLayer] }),
+          view.hitTest(event, { include: [roadsLayer] }),
+          view.hitTest(event, { include: [provincesLayer] })
+        ]).then(function (hits) {
+          const uniResults = (hits[0] && hits[0].results) ? hits[0].results.map(function (r) { return r.graphic; }) : [];
+          const roadResults = (hits[1] && hits[1].results) ? hits[1].results.map(function (r) { return r.graphic; }) : [];
+          const provinceResults = (hits[2] && hits[2].results) ? hits[2].results.map(function (r) { return r.graphic; }) : [];
+
+          const ordered = [];
+          const seen = new Set();
+
+          function pushUnique(graphic) {
+            if (!graphic || seen.has(graphic)) {
+              return;
+            }
+            seen.add(graphic);
+            ordered.push(graphic);
+          }
+
+          pushUnique(nearestUni);
+          uniResults.forEach(pushUnique);
+          roadResults.forEach(pushUnique);
+          provinceResults.forEach(pushUnique);
+
+          if (ordered.length) {
+            view.popup.open({
+              features: ordered,
+              featureMenuOpen: false,
+              location: event.mapPoint
+            });
+          }
+        });
+      });
+
+      const hoverInfoEl = document.getElementById("hoverInfo");
+      view.on("pointer-move", function (event) {
+        const nearestUni = findNearestUniversityGraphic(event, 24);
+        if (nearestUni && hoverInfoEl) {
+          view.container.style.cursor = "pointer";
+          hoverInfoEl.style.display = "block";
+          hoverInfoEl.style.left = event.x + "px";
+          hoverInfoEl.style.top = event.y + "px";
+          hoverInfoEl.textContent = "Trường: " + (nearestUni.attributes.name || "");
+          return;
+        }
+
+        view.hitTest(event).then(function (hit) {
+          const results = (hit && hit.results) ? hit.results : [];
+
+          let picked = results.find(function (r) {
+            return r.graphic && r.graphic.layer === universitiesLayer;
+          });
+          let label = "";
+
+          if (picked) {
+            label = "Trường: " + (picked.graphic.attributes.name || "");
+          } else {
+            picked = results.find(function (r) {
+              return r.graphic && r.graphic.layer === roadsLayer;
+            });
+            if (picked) {
+              label = "Tuyến: " + (picked.graphic.attributes.name || "");
+            } else {
+              picked = results.find(function (r) {
+                return r.graphic && r.graphic.layer === provincesLayer;
+              });
+              if (picked) {
+                label = "Tỉnh/TP: " + (picked.graphic.attributes.name || "");
+              }
+            }
+          }
+
+          if (picked && hoverInfoEl) {
+            view.container.style.cursor = "pointer";
+            hoverInfoEl.style.display = "block";
+            hoverInfoEl.style.left = event.x + "px";
+            hoverInfoEl.style.top = event.y + "px";
+            hoverInfoEl.textContent = label;
+          } else if (hoverInfoEl) {
+            view.container.style.cursor = "default";
+            hoverInfoEl.style.display = "none";
+          }
+        });
+      });
+
+      view.when(function () {
+        addProvinceGraphicsFromGeoJSON().then(function (result) {
+          const provinceStatusEl = document.getElementById("provinceStatus");
+          if (provinceStatusEl) {
+            provinceStatusEl.textContent = "Đã tải ranh giới 8 đơn vị: " + result.loadedCount + "/8 (nguồn " + result.source + ")";
+          }
+
+          if (provincesLayer.graphics.length > 0) {
+            view.goTo(provincesLayer.graphics.toArray()).catch(function () {
+              // Ignore goTo interruptions from user interactions.
+            });
+          }
+
+          console.log("Đã tải dữ liệu thực tế theo format Lab 1.");
+          console.log("Số đơn vị sau sáp nhập hiển thị:", result.loadedCount);
+          console.log("n =", n, "=> 2n cần đạt:", requiredCount, "| tuyến:", roads.length, "| trường:", universities.length);
+        }).catch(function (error) {
+          const provinceStatusEl = document.getElementById("provinceStatus");
+          if (provinceStatusEl) {
+            provinceStatusEl.textContent = "Không tải được ranh giới tỉnh. Kiểm tra Internet/CORS.";
+          }
+          console.error("Không tải được ranh giới tỉnh từ GeoJSON:", error);
+        });
+      });
+    });
+  </script>
+</body>
+</html>
+
+
