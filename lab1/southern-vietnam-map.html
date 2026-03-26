@@ -111,6 +111,30 @@
 
         const mergedAdminUnits = [
           {
+            name: "TP.HCM",
+            components: ["Hồ Chí Minh", "Bình Dương", "Bà Rịa–Vũng Tàu"],
+            population: "~13.7 triệu (ước tính theo đơn vị cũ)",
+            area: "~6,780 km2"
+          },
+          {
+            name: "Đồng Nai",
+            components: ["Đồng Nai", "Bình Phước"],
+            population: "~3.9 triệu (ước tính theo đơn vị cũ)",
+            area: "~12,770 km2"
+          },
+          {
+            name: "Tây Ninh",
+            components: ["Tây Ninh", "Long An"],
+            population: "~3.4 triệu (ước tính theo đơn vị cũ)",
+            area: "~8,540 km2"
+          },
+          {
+            name: "Cần Thơ",
+            components: ["Cần Thơ", "Sóc Trăng", "Hậu Giang"],
+            population: "~3.17 triệu (ước tính theo đơn vị cũ)",
+            area: "~6,410 km2"
+          },
+          {
             name: "Cà Mau",
             components: ["Bạc Liêu", "Cà Mau"],
             population: "~2.6 triệu (ước tính theo đơn vị cũ)",
@@ -1751,6 +1775,16 @@
             latitude: 10.16986345572417,
           },
           {
+            name: "Trường Đại học Cần Thơ",
+            founded: "1966",
+            major:
+              "Đa ngành, trọng điểm nông nghiệp và kỹ thuật",
+            students: "~45,000",
+            location: "Cần Thơ",
+            longitude: 105.770,
+            latitude: 10.029,
+          },
+          {
             name: "Trường Đại học Nam Cần Thơ",
             founded: "2013",
             major:
@@ -1761,23 +1795,15 @@
             latitude: 10.007779142776547,
           },
           {
-            name: "Trường Đại học Cần Thơ",
-            founded: "1966",
-            major: "Đa ngành, trọng điểm nông nghiệp và kỹ thuật",
-            students: "~45,000",
-            location: "Cần Thơ",
-            longitude: 105.770,
-            latitude: 10.029
-          },
-          {
-          name: "Phân hiệu Đại học Kinh tế TP Hồ Chí Minh tại Vĩnh Long",
-          founded: "2020",
-          major: "Kinh doanh nông nghiệp, Robot & Trí tuệ nhân tạo, Kinh doanh quốc tế, Marketing, Logistics, Luật kinh tế, Tài chính - Ngân hàng, Kế toán, Thuế, Quản trị khách sạn, Công nghệ & đổi mới sáng tạo, Tiếng Anh thương mại",
-          students: "~2,000",
-          location: "Vĩnh Long",
-          longitude: 105.96058427347981,
-          latitude: 10.24079894499404
-        }
+            name: "Phân hiệu Đại học Kinh tế TP Hồ Chí Minh tại Vĩnh Long",
+            founded: "2020",
+            major: 
+              "Kinh doanh nông nghiệp, Robot & Trí tuệ nhân tạo, Kinh doanh quốc tế, Marketing, Logistics, Luật kinh tế, Tài chính - Ngân hàng, Kế toán, Thuế, Quản trị khách sạn, Công nghệ & đổi mới sáng tạo, Tiếng Anh thương mại",
+            students: "~2,000",
+            location: "Vĩnh Long",
+            longitude: 105.96058427347981,
+            latitude: 10.24079894499404,
+          }
         ];
 
         function normalizeRoadPath(path) {
@@ -1866,6 +1892,10 @@
         });
 
         const provinceColors = {
+          "TP.HCM": [255, 179, 71, 0.35],
+          "Đồng Nai": [255, 127, 80, 0.35],
+          "Tây Ninh": [255, 204, 92, 0.35],
+          "Cần Thơ": [135, 206, 250, 0.35],
           "Cà Mau": [176, 224, 230, 0.35],
           "An Giang": [152, 251, 152, 0.35],
           "Vĩnh Long": [255, 182, 193, 0.35],
@@ -2009,6 +2039,12 @@
         const universityLogos = {
           "Phân hiệu ĐHQG TP.HCM tại Bến Tre":
             "./assets/logos/ben-tre-quoc-gia_nobg.png",
+          "Phân hiệu Đại học Quốc gia TP Hồ Chí Minh tại Bến Tre":
+            "./assets/logos/ben-tre-quoc-gia_nobg.png",
+          "Trường Đại học Đồng Tháp":
+            "./assets/logos/Đại_học_Đồng_Tháp_nobg.png",
+          "Trường Đại học Xây dựng Miền Tây":
+            "./assets/logos/Logo_Trường_Đại_học_Xây_dựng_Miền_Tây_nobg.png",
           "Phân hiệu Trường Đại học Bình Dương tại Cà Mau":
             "./assets/logos/phan_hieu_dai_hoc_binh_duong_tai_ca_mau_nobg.png",
           "Trường Đại học An Giang - ĐHQG TP.HCM":
@@ -2019,12 +2055,20 @@
             "./assets/logos/Logo-Trường_Đại_học_Võ_Trường_Toản_nobg.png",
           "Trường Đại học Bạc Liêu":
             "./assets/logos/Logo_Trường_Đại_học_Bạc_Liêu.png",
+          "Trường Đại học Cửu Long":
+            "./assets/logos/ff93a9479e9b_nobg.png",
+          "Trường Đại học Cần Thơ":
+            "./assets/logos/Logo_Dai_hoc_Can_Tho.svg_nobg.png",
+          "Trường Đại học Nam Cần Thơ":
+            "./assets/logos/logo-truong-dai-hoc-nam-can-tho-inkythuatso-01-24-10-57-15_nobg.png",
+          "Phân hiệu Đại học Kinh tế TP Hồ Chí Minh tại Vĩnh Long":
+            "./assets/logos/Logo_Phân_hiệu_Vĩnh_Long_(Tiếng_Anh)_(Chữ_xanh)_(1)_nobg.png",
         };
-
         function getUniversitySymbol(uniName) {
+          const logoUrl = universityLogos[uniName];
           return {
             type: "picture-marker",
-            url: universityLogos[uniName] || fallbackUniIcon,
+            url: logoUrl ? encodeURI(logoUrl) : fallbackUniIcon,
             width: "32px",
             height: "32px",
           };
