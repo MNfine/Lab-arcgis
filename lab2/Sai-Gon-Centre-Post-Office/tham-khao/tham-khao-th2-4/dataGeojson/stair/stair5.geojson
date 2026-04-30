@@ -1,0 +1,49 @@
+{
+    "type": "FeatureCollection",
+    "generator": "saigonoperahouse",
+    "copyright": "Saigonoperahouse",
+    "timestamp": "2024-11-11T10:03:07Z",
+    "features": [
+        {
+            "type": "Feature",
+            "properties": {
+                "Building name": "stair 5",
+                "height": 0.11,
+                "idb": "1"
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            106.70292245634529,
+                            10.776462577056938,
+                            3.43
+                        ],
+                        [
+                            106.702891,
+                            10.776427,
+                            3.43
+                        ],
+                        [
+                            106.703032,
+                            10.776303,
+                            3.43
+                        ],
+                        [
+                            106.70306346649294,
+                            10.776338214733078,
+                            3.43
+                        ],
+                        [
+                            106.70292245634529,
+                            10.776462577056938,
+                            3.43
+                        ]
+                    ]
+                ]
+            },
+            "id": "2"
+        }
+    ]
+}

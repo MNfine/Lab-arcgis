@@ -1,0 +1,49 @@
+{
+    "type": "FeatureCollection",
+    "generator": "saigonoperahouse",
+    "copyright": "Saigonoperahouse",
+    "timestamp": "2024-11-11T10:03:07Z",
+    "features": [
+        {
+            "type": "Feature",
+            "properties": {
+                "Building name": "stair 6",
+                "height": 0.11,
+                "idb": "1"
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            106.70292396508786,
+                            10.77646142428558,
+                            3.54
+                        ],
+                        [
+                            106.702894,
+                            10.776427,
+                            3.54
+                        ],
+                        [
+                            106.703031,
+                            10.776307,
+                            3.54
+                        ],
+                        [
+                            106.70306132765658,
+                            10.776339856348947,
+                            3.54
+                        ],
+                        [
+                            106.70292396508786,
+                            10.77646142428558,
+                            3.54
+                        ]
+                    ]
+                ]
+            },
+            "id": "2"
+        }
+    ]
+}

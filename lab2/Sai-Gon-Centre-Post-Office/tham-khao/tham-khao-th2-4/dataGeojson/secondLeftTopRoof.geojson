@@ -1,0 +1,49 @@
+{
+  "type": "FeatureCollection",
+  "generator": "saigonoperahouse",
+  "copyright": "Saigonoperahouse",
+  "timestamp": "2024-11-11T10:03:07Z",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "Building name": "second left top roof",
+        "height": 0.78,
+        "idb": "1"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              106.703441,
+              10.776787,
+              22.88
+            ],
+            [
+              106.703386,
+              10.776836,
+              26.02
+            ],
+            [
+              106.703461,
+              10.776919,
+              26.02
+            ],
+            [
+              106.703516,
+              10.77687,
+              22.88
+            ],
+            [
+              106.703441,
+              10.776787,
+              22.88
+            ]
+          ]
+        ]
+      },
+      "id": "2"
+    }
+  ]
+}

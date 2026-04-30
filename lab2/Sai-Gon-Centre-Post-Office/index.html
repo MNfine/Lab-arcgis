@@ -1,0 +1,1108 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>3D - Buu dien Trung tam Sai Gon</title>
+
+  <link rel="stylesheet" href="https://js.arcgis.com/4.29/esri/themes/light/main.css" />
+  <script src="https://js.arcgis.com/4.29/"></script>
+
+  <style>
+    html,
+    body,
+    #viewDiv {
+      padding: 0;
+      margin: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .title {
+      position: absolute;
+      top: 12px;
+      right: 16px;
+      left: auto;
+      z-index: 10;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-family: "Segoe UI", sans-serif;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      max-width: 300px;
+    }
+
+    .title h1 {
+      font-size: 16px;
+      margin: 0 0 4px 0;
+    }
+
+    .title p {
+      margin: 0;
+      font-size: 12px;
+      color: #333;
+      line-height: 1.4;
+    }
+
+    .source-note {
+      margin-top: 6px;
+      font-size: 11px;
+      color: #5a4a2a;
+      word-break: break-all;
+    }
+
+    .source-controls {
+      margin-top: 8px;
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .source-controls select {
+      font-size: 12px;
+      padding: 4px 6px;
+      border-radius: 6px;
+      border: 1px solid #d0c5a8;
+      background: #fff;
+      color: #3b311d;
+      max-height: 120px;
+      overflow-y: auto;
+      min-width: 160px;
+      box-sizing: border-box;
+    }
+    .source-controls button {
+      font-size: 12px;
+      padding: 4px 12px;
+      border-radius: 6px;
+      border: 1px solid #d0c5a8;
+      background: #fff;
+      color: #3b311d;
+      cursor: pointer;
+      min-width: 48px;
+      margin-left: 0;
+      flex-shrink: 0;
+    }
+    .source-controls {
+      margin-top: 8px;
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      flex-wrap: wrap;
+      max-width: 100%;
+    }
+
+    .source-controls button {
+      cursor: pointer;
+    }
+    /* Preview card (shared across sources) */
+    #locationCard {
+      position: absolute;
+      bottom: 15px;
+      right: 15px;
+      width: 220px;
+      overflow: hidden;
+      background: white;
+      border-radius: 6px;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.12);
+      z-index: 100;
+      font-family: Arial, sans-serif;
+    }
+    #locationCard img {
+      width: 100%;
+      height: 120px;
+      object-fit: cover;
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+    }
+    .card-content { padding: 10px; font-size: 12px; color: #333; }
+    .card-content h3 { margin: 0 0 6px; font-size: 14px; }
+    .card-content p { margin: 0; color: #666; font-size: 11px; line-height: 1.4; }
+  </style>
+
+  <script>
+    require([
+      "esri/Map",
+      "esri/views/SceneView",
+      "esri/layers/GeoJSONLayer",
+      "esri/layers/GraphicsLayer",
+      "esri/Graphic",
+      "esri/request",
+      "esri/widgets/Legend",
+      "esri/widgets/Expand"
+    ], function (EsriMap, SceneView, GeoJSONLayer, GraphicsLayer, Graphic, esriRequest, Legend, Expand) {
+      const version = Date.now();
+      const glbModelCandidates = [
+        "./workflow-glb/input-models/Sai_Gon_Centre_Post_Office.glb"
+      ].map(function (u) {
+        return `${encodeURI(u)}?v=${version}`;
+      });
+      const lod3Url = `./buu-dien-central-lod3.geojson?v=${version}`;
+      const objCompareUrl = `./workflow-obj/output/obj-faces-triangles.geojson?v=${version}`;
+      // EXPORT-DATA: danh sách file geojson export-data
+      const exportDataBase = "./workflow-export-data/data/geojson-layers/";
+      const exportDataFiles = [
+        "arched_window_floor_1.geojson","arched_window_floor_2.geojson","base.geojson","big_wall.geojson","big_window_on_the_side.geojson","bottom_roof_bars.geojson","clock.geojson","column_floor_3.geojson","eaves.geojson","floor_3.geojson","gate_high_column.geojson","gate_low_column.geojson","gate_wall.geojson","lean-to.geojson","left_roof.geojson","lower_wall_1.geojson","lower_wall_2.geojson","low_column.geojson","main_gate.geojson","main_gate_arch.geojson","middle_wall.geojson","phu_dieu_1.geojson","phu_dieu_2.geojson","phu_dieu_3.geojson","phu_dieu_4.geojson","right_roof.geojson","square_window.geojson","stairs.geojson","top_column.geojson","top_roof.geojson","top_roof_bars.geojson","wall.geojson","wall_floor_1.geojson","window_dark_green.geojson","window_floor_3.geojson"
+      ];
+      // Color mapping từ script.js export-data
+      const exportDataStyleMap = {
+        "wall.geojson": { color: [255, 243, 224, 1] },
+        "lower_wall_1.geojson": { color: [255, 243, 224, 1] },
+        "lower_wall_2.geojson": { color: [114, 114, 114, 1] },
+        "middle_wall.geojson": { color: [255, 243, 224, 1] },
+        "big_wall.geojson": { color: [255, 243, 224, 1] },
+        "wall_floor_1.geojson": { color: [231, 226, 135, 1] },
+        "floor_3.geojson": { color: [240, 240, 240, 1] },
+        "column_floor_3.geojson": { color: [255, 255, 255, 1] },
+        "top_column.geojson": { color: [231, 208, 88, 1] },
+        "high_column.geojson": { color: [231, 226, 135, 1] },
+        "low_column.geojson": { color: [231, 208, 88, 1] },
+        "top_roof.geojson": { color: [244, 143, 65, 1] },
+        "left_roof.geojson": { color: [244, 143, 65, 1] },
+        "right_roof.geojson": { color: [244, 143, 65, 1] },
+        "top_roof_bars.geojson": { color: [244, 143, 65, 1] },
+        "bottom_roof_bars.geojson": { color: [244, 143, 65, 1] },
+        "eaves.geojson": { color: [244, 143, 65, 1] },
+        "lean-to.geojson": { color: [124, 124, 124, 1] },
+        "arched_window_floor_1.geojson": { color: [76, 175, 80, 1] },
+        "arched_window_floor_2.geojson": { color: [76, 175, 80, 1] },
+        "square_window.geojson": { color: [76, 175, 80, 1] },
+        "window_floor_3.geojson": { color: [76, 175, 80, 1] },
+        "window_dark_green.geojson": { color: [76, 175, 80, 1] },
+        "big_window_on_the_side.geojson": { color: [76, 175, 80, 1] },
+        "main_gate.geojson": { color: [68, 121, 68, 1] },
+        "main_gate_arch.geojson": { color: [200, 200, 200, 1] },
+        "clock.geojson": { color: [255, 255, 240, 1] },
+        "phu_dieu_1.geojson": { color: [255, 255, 240, 1] },
+        "phu_dieu_2.geojson": { color: [255, 255, 240, 1] },
+        "phu_dieu_3.geojson": { color: [255, 255, 240, 1] },
+        "phu_dieu_4.geojson": { color: [255, 255, 240, 1] },
+        "gate_wall.geojson": { color: [231, 181, 123, 1] },
+        "gate_high_column.geojson": { color: [231, 208, 88, 1] },
+        "gate_low_column.geojson": { color: [231, 208, 88, 1] },
+        "base.geojson": { color: [167, 168, 167, 1] },
+        "stairs.geojson": { color: [126, 130, 126, 1] }
+      };
+      const verticalLift = 7.3;
+      const objVerticalOffset = 8.5;
+      let currentGlbLayer = null;
+      let currentGlbUrl = null;
+      const globalBlobUrls = [];
+
+      // Per-source overrides (headingDelta/rotation/zOffset/anchorZ) — adjust per data selection
+      const sourceModelOverrides = {
+        "glb": { zOffset: 0.5 },
+        "sheet": { zOffset: verticalLift },
+        // raise anchorZ and zOffset for export-data to avoid sinking; add small east/north offsets (meters)
+        "export-data": { zOffset: verticalLift + 3.0, headingDelta: 45, rotateDeg: 45, anchorZ: verticalLift + 3.0, verticalScale: 1.0, offsetEast: -30.0, offsetNorth: -150.0 },
+        "obj": { zOffset: objVerticalOffset }
+      };
+
+      function applySourceOverrides(baseCfg, sourceKey) {
+        const ov = sourceModelOverrides && sourceModelOverrides[sourceKey] ? sourceModelOverrides[sourceKey] : {};
+        const out = Object.assign({}, baseCfg || {});
+        if (ov.zOffset !== undefined) out.zOffset = ov.zOffset;
+        if (ov.heading !== undefined) out.heading = ov.heading;
+        if (ov.headingDelta !== undefined) out.heading = (baseCfg && baseCfg.heading || 0) + ov.headingDelta;
+        if (ov.tilt !== undefined) out.tilt = ov.tilt;
+        if (ov.roll !== undefined) out.roll = ov.roll;
+        return out;
+      }
+
+      // Điều chỉnh lại vị trí anchor và camera cho hợp lý hơn
+      const modelConfig = {
+        lon: 106.69990, // dịch nhẹ về phía đông
+        lat: 10.77995,  // dịch nhẹ về phía nam
+        zOffset: 0.5,
+        width: 67,
+        depth: 23,
+        height: 25,
+        heading: 45,
+        tilt: 0,
+        roll: 0
+      };
+
+      // Camera: độ cao khoảng 60m, nghiêng khoảng 60 độ, xoay sao cho nhìn về hướng đông bắc
+      const cameraConfig = {
+        position: [106.69870, 10.77996, 66],
+        heading: 90,
+        tilt: 68
+      };
+
+      function makePartLayer(url, title, partTypes, size, color, edgeColor) {
+        const layer = new GeoJSONLayer({
+          url,
+          title,
+          outFields: ["*"],
+          definitionExpression: partTypes.length
+            ? `part_type IN (${partTypes.map(function (p) { return `'${p}'`; }).join(",")})`
+            : "1=1",
+          elevationInfo: {
+            mode: "absolute-height",
+            featureExpressionInfo: {
+              expression: `IIF(IsEmpty($feature.min_height), ${verticalLift}, Number($feature.min_height) + ${verticalLift})`
+            },
+            unit: "meters"
+          },
+          popupTemplate: {
+            title: "{name}",
+            content: [
+              {
+                type: "fields",
+                fieldInfos: [
+                  { fieldName: "part_type", label: "Thanh phan" },
+                  { fieldName: "min_height", label: "Do cao chan (m)" },
+                  { fieldName: "height", label: "Do cao dinh (m)" },
+                  { fieldName: "extrude_height", label: "Chieu cao khoi (m)" }
+                ]
+              }
+            ]
+          }
+        });
+
+        layer.renderer = {
+          type: "simple",
+          symbol: {
+            type: "polygon-3d",
+            symbolLayers: [
+              {
+                type: "extrude",
+                size,
+                material: { color },
+                edges: {
+                  type: "solid",
+                  color: edgeColor,
+                  size: 0.8
+                }
+              }
+            ]
+          },
+          visualVariables: [
+            {
+              type: "size",
+              axis: "height",
+              field: "extrude_height",
+              valueUnit: "meters"
+            }
+          ]
+        };
+        return layer;
+      }
+
+      const taxonomyConfigs = [
+        { key: "roof-main", title: "Roof Main", tokens: ["roof", "wing", "pyramid", "bay", "dome"], size: 1.25, color: [236, 148, 111, 0.93], edge: [110, 67, 41, 0.96] },
+        { key: "cornice", title: "Cornice", tokens: ["cornice"], size: 0.55, color: [231, 210, 168, 0.94], edge: [115, 97, 63, 0.97] },
+        { key: "window-arch", title: "Window Arch", tokens: ["window", "arch", "inner"], size: 0.85, color: [72, 126, 134, 0.93], edge: [37, 66, 72, 0.97] },
+        { key: "column", title: "Columns", tokens: ["column", "pillar"], size: 1.0, color: [240, 229, 196, 0.94], edge: [108, 93, 62, 0.97] },
+        { key: "stair", title: "Stairs", tokens: ["stair", "step"], size: 0.65, color: [185, 138, 96, 0.94], edge: [94, 64, 38, 0.97] },
+        { key: "portal", title: "Portal/Entrance", tokens: ["portal", "entrance"], size: 1.05, color: [228, 207, 158, 0.94], edge: [108, 86, 54, 0.97] },
+        { key: "facade-base", title: "Facade Base", tokens: ["facade", "mass", "envelope", "decor"], size: 1.0, color: [217, 192, 127, 0.93], edge: [88, 70, 45, 0.97] }
+      ];
+
+      function normalizeToken(text) {
+        return (text || "")
+          .toString()
+          .trim()
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/^-+|-+$/g, "");
+      }
+
+      function inferTaxonomy(partType) {
+        const p = normalizeToken(partType);
+        for (const cfg of taxonomyConfigs) {
+          if (cfg.tokens.some(function (t) { return p.includes(t); })) {
+            return cfg.key;
+          }
+        }
+        return "facade-base";
+      }
+
+      function groupPartTypesByTaxonomy(partTypes) {
+        const grouped = new Map();
+        taxonomyConfigs.forEach(function (cfg) {
+          grouped.set(cfg.key, []);
+        });
+
+        partTypes.forEach(function (part) {
+          const key = inferTaxonomy(part);
+          grouped.get(key).push(part);
+        });
+
+        return taxonomyConfigs
+          .map(function (cfg) {
+            return {
+              key: cfg.key,
+              title: cfg.title,
+              size: cfg.size,
+              color: cfg.color,
+              edge: cfg.edge,
+              partTypes: grouped.get(cfg.key) || []
+            };
+          })
+          .filter(function (g) { return g.partTypes.length > 0; });
+      }
+
+      function parseHexColor(hex, fallback) {
+        if (!hex || typeof hex !== "string") return fallback;
+        const m = /^#?([0-9a-fA-F]{6})$/.exec(hex.trim());
+        if (!m) return fallback;
+        const v = m[1];
+        return [
+          parseInt(v.slice(0, 2), 16),
+          parseInt(v.slice(2, 4), 16),
+          parseInt(v.slice(4, 6), 16),
+          0.92
+        ];
+      }
+
+      function makeEdgeColor(fillColor) {
+        if (!Array.isArray(fillColor) || fillColor.length < 3) return [60, 50, 35, 0.95];
+        return [
+          Math.max(0, Math.round(fillColor[0] * 0.55)),
+          Math.max(0, Math.round(fillColor[1] * 0.55)),
+          Math.max(0, Math.round(fillColor[2] * 0.55)),
+          0.95
+        ];
+      }
+
+      async function loadSheetPartStyleMap(url) {
+        const resp = await esriRequest(url, { responseType: "json" });
+        const features = (resp && resp.data && resp.data.features) || [];
+        const styleMap = new Map();
+
+        for (const f of features) {
+          const p = f && f.properties ? f.properties : {};
+          const part = (p.part_type || "unknown").toString().trim();
+          if (!part || styleMap.has(part)) continue;
+
+          const color = parseHexColor(p.color, [217, 192, 127, 0.92]);
+          styleMap.set(part, {
+            color,
+            edge: makeEdgeColor(color)
+          });
+        }
+
+        return styleMap;
+      }
+
+      function pickDominantStyle(groupPartTypes, styleMap, fallbackColor, fallbackEdge) {
+        for (const part of groupPartTypes) {
+          const style = styleMap.get(part);
+          if (style) {
+            return style;
+          }
+        }
+        return { color: fallbackColor, edge: fallbackEdge };
+      }
+
+      function makeGlbModelLayer(glbUrl, cfg) {
+        cfg = cfg || modelConfig;
+        const layer = new GraphicsLayer({
+          title: "GLB Model",
+          elevationInfo: {
+            mode: "relative-to-ground",
+            offset: cfg.zOffset,
+            unit: "meters"
+          }
+        });
+
+        const modelGraphic = new Graphic({
+          geometry: {
+            type: "point",
+            longitude: cfg.lon,
+            latitude: cfg.lat,
+            z: 0.5
+          },
+          symbol: {
+            type: "point-3d",
+            symbolLayers: [
+              {
+                type: "object",
+                resource: { href: glbUrl },
+                width: cfg.width,
+                depth: cfg.depth,
+                height: cfg.height,
+                heading: cfg.heading,
+                tilt: cfg.tilt,
+                roll: cfg.roll,
+                anchor: "bottom"
+              }
+            ]
+          },
+          attributes: {
+            name: "Buu dien Trung tam Sai Gon",
+            source: "glb-model"
+          },
+          popupTemplate: {
+            title: "{name}",
+            content: "Nguon: GLB model"
+          }
+        });
+
+        layer.add(modelGraphic);
+        return layer;
+      }
+
+      function makeObjCompareLayer(url) {
+        const layer = new GeoJSONLayer({
+          url,
+          title: "OBJ Compare (triangle mesh)",
+          // For debugging visibility we use no extra vertical offset so
+          // the feature Z values in the GeoJSON are rendered raw.
+          elevationInfo: {
+            mode: "absolute-height",
+            offset: 0,
+            unit: "meters"
+          },
+          outFields: ["*"],
+          popupTemplate: {
+            title: "OBJ triangle",
+            content: [
+              {
+                type: "fields",
+                fieldInfos: [
+                  { fieldName: "face_id", label: "Face ID" },
+                  { fieldName: "triangle_id", label: "Triangle ID" },
+                  { fieldName: "triangles_in_face", label: "Triangles in source face" },
+                  { fieldName: "source", label: "Source" }
+                ]
+              }
+            ]
+          }
+        });
+
+        // Use a high-contrast color and thicker outline so mesh triangles
+        // are visible against the basemap during debugging.
+        layer.renderer = {
+          type: "simple",
+          symbol: {
+            type: "polygon-3d",
+            symbolLayers: [
+              {
+                type: "fill",
+                material: { color: [246, 252, 177, 0.95] },
+                outline: { color: [0, 0, 0, 1], size: 1.2 }
+              }
+            ]
+          }
+        };
+
+        return layer;
+      }
+
+      async function hasGeojson(url) {
+        try {
+          await esriRequest(url, { responseType: "json" });
+          return true;
+        } catch (e) {
+          return false;
+        }
+      }
+
+      async function hasBinary(url) {
+        try {
+          const res = await fetch(url, { method: "HEAD", cache: "no-store" });
+          return res.ok;
+        } catch (e) {
+          return false;
+        }
+      }
+
+      async function firstAvailableUrl(urls, checker) {
+        for (const u of urls) {
+          if (await checker(u)) {
+            return u;
+          }
+        }
+        return null;
+      }
+
+      // (camera nudge helpers removed — using fixed initial camera position)
+
+      function readPreferredSource() {
+        const p = new URLSearchParams(window.location.search);
+        const src = (p.get("source") || "auto").toLowerCase();
+        return ["auto", "glb", "sheet", "obj", "export-data"].includes(src) ? src : "auto";
+      }
+
+      function setupSourceControls(initialSource) {
+        const sourceSelect = document.getElementById("sourceSelect");
+        const sourceApplyBtn = document.getElementById("sourceApplyBtn");
+        // Thêm lựa chọn EXPORT-DATA nếu chưa có (phải thêm trước khi đặt giá trị)
+        if (!Array.from(sourceSelect.options).some(opt => opt.value === "export-data")) {
+          const opt = document.createElement("option");
+          opt.value = "export-data";
+          opt.textContent = "EXPORT-DATA (GeoJSON từng part)";
+          sourceSelect.appendChild(opt);
+        }
+        // Đặt giá trị hiện tại (sau khi đảm bảo option đã tồn tại)
+        sourceSelect.value = initialSource;
+        sourceApplyBtn.addEventListener("click", function () {
+          const next = sourceSelect.value;
+          const url = new URL(window.location.href);
+          url.searchParams.set("source", next);
+          window.location.href = url.toString();
+        });
+        // camera nudge buttons removed (initial camera used)
+      }
+
+      function pickSource(preferred, available) {
+        if (preferred === "glb") return available.glb ? { key: "glb", url: available.glb } : { key: "none", url: null };
+        if (preferred === "sheet") return available.sheet ? { key: "sheet", url: available.sheet } : { key: "none", url: null };
+        if (preferred === "obj") return available.obj ? { key: "obj", url: available.obj } : { key: "none", url: null };
+        if (preferred === "export-data") return { key: "export-data", url: null };
+
+        // auto mode: fallback in priority order
+        if (available.glb) return { key: "glb", url: available.glb };
+        if (available.sheet) return { key: "sheet", url: available.sheet };
+        if (available.obj) return { key: "obj", url: available.obj };
+        return { key: "none", url: null };
+      }
+
+      async function init() {
+        const preferredSource = readPreferredSource();
+        setupSourceControls(preferredSource);
+
+        const glbModelUrl = await firstAvailableUrl(glbModelCandidates, hasBinary);
+        const hasSheet = await hasGeojson(lod3Url);
+        const hasObjCompare = await hasGeojson(objCompareUrl);
+        const chosen = pickSource(preferredSource, {
+          glb: glbModelUrl,
+          sheet: hasSheet ? lod3Url : null,
+          obj: hasObjCompare ? objCompareUrl : null
+        });
+        const dataUrl = chosen.url;
+        let currentSource = chosen.key;
+
+        const map = new EsriMap({
+          basemap: "streets-navigation-vector",
+          ground: "world-elevation",
+          layers: []
+        });
+
+        const view = new SceneView({
+          container: "viewDiv",
+          map,
+          qualityProfile: "high",
+          camera: cameraConfig,
+          environment: {
+              atmosphereEnabled: true,
+              starsEnabled: false,
+              lighting: {
+                directShadowsEnabled: true,
+                // NOTE: `ambientOcclusionEnabled` was deprecated in 4.27 and has no effect.
+                // Removing it avoids the console warning shown in 4.29.
+                cameraTrackingEnabled: true,
+                date: "2026-04-09T08:30:00+07:00"
+              }
+            }
+        });
+
+        // Cinematic fly-to (script.js style) — smooth zoom and slight pull-back
+        function flyToModel() {
+          if (!view) return;
+          const ov = applySourceOverrides(modelConfig, currentSource);
+          const heading = (ov && ov.heading) || cameraConfig.heading || 35;
+          const tilt = (ov && ov.tilt) || cameraConfig.tilt || 65;
+          const zoom = (ov && ov.zoom) || 20; // zoom out slightly (xích ra chút)
+
+          view.goTo({
+            target: [modelConfig.lon, modelConfig.lat],
+            zoom: zoom,
+            tilt: tilt,
+            heading: heading
+          }, {
+            duration: 2000
+          }).catch(function(error) {
+            if (error && error.name !== "AbortError") {
+              console.error("Lỗi khi zoom camera: ", error);
+            }
+          });
+        }
+
+        // Auto fly when view is ready: start high then fly in
+        view.when(() => {
+          try {
+            view.camera = {
+              position: [modelConfig.lon, modelConfig.lat, 500],
+              heading: cameraConfig.heading || 90,
+              tilt: 0
+            };
+          } catch (e) { /* ignore */ }
+
+          setTimeout(() => {
+            flyToModel();
+          }, 500);
+        });
+
+        // Align model to combined extent of data layers (GeoJSON / Graphics)
+        // Recreates GLB layer at computed centroid and recenters view.
+        async function alignModel() {
+          try {
+            let xmin = Infinity, ymin = Infinity, xmax = -Infinity, ymax = -Infinity;
+            let found = false;
+            for (const l of map.layers.items) {
+              try {
+                if (l.type === 'geojson') {
+                  await l.when();
+                  const e = l.fullExtent || (await l.queryExtent().catch(()=>null));
+                  if (e && typeof e.xmin === 'number') {
+                    xmin = Math.min(xmin, e.xmin); ymin = Math.min(ymin, e.ymin);
+                    xmax = Math.max(xmax, e.xmax); ymax = Math.max(ymax, e.ymax);
+                    found = true;
+                  }
+                } else if (l.type === 'graphics') {
+                  const gfxs = l.graphics && (l.graphics.items || (l.graphics.toArray && l.graphics.toArray())) || [];
+                  for (const g of gfxs) {
+                    const geom = g.geometry;
+                    if (!geom) continue;
+                    if (geom.type === 'polygon' && geom.rings) {
+                      for (const ring of geom.rings) {
+                        for (const pt of ring) {
+                          if (Array.isArray(pt) && typeof pt[0] === 'number') {
+                            xmin = Math.min(xmin, pt[0]); ymin = Math.min(ymin, pt[1]);
+                            xmax = Math.max(xmax, pt[0]); ymax = Math.max(ymax, pt[1]);
+                            found = true;
+                          }
+                        }
+                      }
+                    } else if (geom.type === 'point') {
+                      const x = geom.longitude !== undefined ? geom.longitude : (geom.x !== undefined ? geom.x : null);
+                      const y = geom.latitude !== undefined ? geom.latitude : (geom.y !== undefined ? geom.y : null);
+                      if (typeof x === 'number' && typeof y === 'number') {
+                        xmin = Math.min(xmin, x); ymin = Math.min(ymin, y);
+                        xmax = Math.max(xmax, x); ymax = Math.max(ymax, y);
+                        found = true;
+                      }
+                    }
+                  }
+                }
+              } catch (e) {
+                console.warn('alignModel: layer check failed', e);
+              }
+            }
+
+            if (!found) { console.warn('alignModel: no data layers found to compute centroid'); return; }
+
+            const cx = (xmin + xmax) / 2;
+            const cy = (ymin + ymax) / 2;
+            console.log('alignModel: computed centroid', cx, cy);
+
+            modelConfig.lon = cx;
+            modelConfig.lat = cy;
+
+
+            if (currentGlbUrl) {
+              try { if (currentGlbLayer) map.remove(currentGlbLayer); } catch(e){}
+              const cfg = applySourceOverrides(modelConfig, currentSource);
+              currentGlbLayer = makeGlbModelLayer(currentGlbUrl, cfg);
+              map.add(currentGlbLayer);
+            }
+
+            try {
+              const cfg2 = applySourceOverrides(modelConfig, currentSource);
+              const heading = (cfg2 && cfg2.heading) || cameraConfig.heading || 35;
+              const tilt = (cfg2 && cfg2.tilt) || cameraConfig.tilt || 65;
+              await view.goTo({ target: [modelConfig.lon, modelConfig.lat], zoom: 20, tilt: tilt, heading: heading }, { duration: 900 });
+            } catch (e) { /* ignore */ }
+
+            try { document.getElementById('sourceNote').textContent = `Model aligned to centroid: ${modelConfig.lon.toFixed(6)}, ${modelConfig.lat.toFixed(6)}`; } catch(e){}
+          } catch (e) { console.warn('alignModel failed', e); }
+        }
+
+        // Attach reset button once view is ready
+        view.when().then(function() {
+            try {
+            const btn = document.getElementById('resetBtn');
+            if (btn) btn.onclick = function() { flyToModel(); };
+            const alignBtn = document.getElementById('alignBtn');
+            if (alignBtn) alignBtn.onclick = function () { try { alignModel(); } catch(e){ console.warn('alignModel call failed', e); } };
+          } catch (e) { /* ignore */ }
+        }).catch(()=>{});
+
+        if (chosen.key === "export-data") {
+          document.getElementById("sourceNote").textContent = `Nguon du lieu dang nap: EXPORT-DATA (GeoJSON export)`;
+          // Load tất cả các file geojson export-data
+          let totalFeatures = 0;
+
+          // helpers: detect if GeoJSON coordinates look like local meters (not lon/lat)
+          function findFirstCoord(coords) {
+            if (!coords) return null;
+            if (typeof coords[0] === 'number') return coords;
+            for (const c of coords) {
+              const r = findFirstCoord(c);
+              if (r) return r;
+            }
+            return null;
+          }
+
+          function isLikelyLocal(fc) {
+            if (!fc || !fc.features || !fc.features.length) return false;
+            const geom = fc.features[0].geometry;
+            if (!geom || !geom.coordinates) return false;
+            const coord = findFirstCoord(geom.coordinates);
+            if (!coord) return false;
+            const x = coord[0], y = coord[1];
+            // if coords exceed lon/lat ranges, treat as local meters
+            return Math.abs(x) > 180 || Math.abs(y) > 90;
+          }
+
+          function convertCoordsRecursive(coords, baseLon, baseLat, centerX, centerY, minZ, anchorZ, rotateDeg, verticalScale) {
+            if (!Array.isArray(coords)) return coords;
+            rotateDeg = rotateDeg || 0;
+            verticalScale = (verticalScale === undefined) ? 1.0 : verticalScale;
+            if (coords.length && typeof coords[0] === 'number') {
+              const x = coords[0], y = coords[1];
+              const zLocal = coords.length > 2 ? Number(coords[2]) : 0;
+              const m_lat = 111320.0;
+              const m_lon = m_lat * Math.cos((baseLat || 0) * Math.PI / 180);
+
+              // rotate around provided center (in local meters) if centerX/centerY provided
+              let east = x - (centerX || 0);
+              let north = y - (centerY || 0);
+              if (rotateDeg && Math.abs(rotateDeg) > 1e-6) {
+                const theta = rotateDeg * Math.PI / 180.0;
+                const cosT = Math.cos(theta), sinT = Math.sin(theta);
+                const re = cosT * east + sinT * north; // clockwise
+                const rn = -sinT * east + cosT * north;
+                east = re; north = rn;
+              }
+
+              const lon = baseLon + east / m_lon;
+              const lat = baseLat + north / m_lat;
+
+              const zmin = (typeof minZ === 'number' && isFinite(minZ)) ? minZ : 0;
+              const anchor = (typeof anchorZ === 'number') ? anchorZ : 0;
+              const up_m = zLocal - zmin;
+              const worldZ = parseFloat((anchor + up_m * verticalScale).toFixed(3));
+
+              if (coords.length > 2) {
+                return [parseFloat(lon.toFixed(9)), parseFloat(lat.toFixed(9)), worldZ];
+              }
+              return [parseFloat(lon.toFixed(9)), parseFloat(lat.toFixed(9)), worldZ];
+            }
+            return coords.map(function (c) { return convertCoordsRecursive(c, baseLon, baseLat, centerX, centerY, minZ, anchorZ, rotateDeg, verticalScale); });
+          }
+
+          // First: fetch all files so we can compute a centroid for local-meter exports
+          const fetched = [];
+          for (const fname of exportDataFiles) {
+            const url = exportDataBase + fname;
+            try {
+              const resp = await esriRequest(url, { responseType: "json" });
+              const geojson = (resp && resp.data) || resp;
+              fetched.push({ fname, geojson });
+            } catch (err) {
+              console.warn('Failed to fetch export-data file', fname, err);
+            }
+          }
+
+          // accumulate mean X/Y and minZ for files that look like local-meter exports
+          let sumX = 0, sumY = 0, coordCount = 0, minZ = Infinity;
+          function accumulateCoords(coords) {
+            if (!Array.isArray(coords)) return;
+            if (coords.length && typeof coords[0] === 'number') {
+              sumX += Number(coords[0]) || 0;
+              sumY += Number(coords[1]) || 0;
+              if (coords.length > 2 && typeof coords[2] === 'number') minZ = Math.min(minZ, Number(coords[2]));
+              coordCount += 1;
+              return;
+            }
+            for (const c of coords) accumulateCoords(c);
+          }
+
+          for (const item of fetched) {
+            if (!isLikelyLocal(item.geojson)) continue;
+            try {
+              for (const feat of (item.geojson.features || [])) {
+                if (feat && feat.geometry && feat.geometry.coordinates) accumulateCoords(feat.geometry.coordinates);
+              }
+            } catch (e) { /* ignore per-file errors */ }
+          }
+
+          const m_lat = 111320.0;
+          const m_lon = m_lat * Math.cos(modelConfig.lat * Math.PI / 180);
+          // If we have local coordinates, compute baseLon/baseLat so the centroid maps to modelConfig lon/lat
+          let baseLon = modelConfig.lon, baseLat = modelConfig.lat;
+          let meanX = 0, meanY = 0;
+          if (coordCount > 0) {
+            meanX = sumX / coordCount;
+            meanY = sumY / coordCount;
+            const ov = sourceModelOverrides['export-data'] || {};
+            const offsetE = ov.offsetEast || 0;
+            const offsetN = ov.offsetNorth || 0;
+            baseLon = modelConfig.lon - meanX / m_lon + offsetE / m_lon;
+            baseLat = modelConfig.lat - meanY / m_lat + offsetN / m_lat;
+            console.log('Export-data: computed local centroid', meanX, meanY, 'offsetE', offsetE, 'offsetN', offsetN, '-> baseLon,baseLat', baseLon, baseLat, 'minZ', minZ);
+          }
+
+          // Track blob URLs so we can revoke them later (kept for compatibility)
+          const blobUrls = [];
+
+          // Render EXPORT-DATA progressively: create a GraphicsLayer and add each
+          // feature as a Graphic (with tiny pauses) to emulate the detailed build-up
+          // behavior from workflow-export-data/script.js.
+          const exportGraphics = new GraphicsLayer({
+            title: "EXPORT-DATA (parts)",
+            elevationInfo: { mode: "absolute-height" }
+          });
+          map.add(exportGraphics);
+
+          let addedCount = 0;
+
+          for (const item of fetched) {
+            const fname = item.fname;
+            try {
+              const style = exportDataStyleMap[fname] || { color: [200,200,200,1] };
+              const geojson = item.geojson;
+              let converted = geojson;
+
+              // If this file looks like local-meter export, convert coords in-memory
+              if (isLikelyLocal(geojson)) {
+                converted = JSON.parse(JSON.stringify(geojson));
+                const ov = sourceModelOverrides['export-data'] || {};
+                const rotateDeg = ov.rotateDeg || 0;
+                const anchorZ = (ov.anchorZ !== undefined) ? ov.anchorZ : verticalLift;
+                const verticalScale = ov.verticalScale || 1.0;
+                for (const f of (converted.features || [])) {
+                  if (f && f.geometry && f.geometry.coordinates) {
+                    f.geometry.coordinates = convertCoordsRecursive(f.geometry.coordinates, baseLon, baseLat, meanX, meanY, minZ, anchorZ, rotateDeg, verticalScale);
+                  }
+                }
+              }
+
+              if (!converted || !Array.isArray(converted.features)) continue;
+
+              // Add each polygon ring as a separate Graphic for progressive rendering
+              for (const feature of converted.features) {
+                if (!feature || !feature.geometry) continue;
+                const geom = feature.geometry;
+                let rings = [];
+                if (geom.type === 'Polygon') rings = geom.coordinates;
+                else if (geom.type === 'MultiPolygon') rings = geom.coordinates.flat(1);
+                else continue;
+
+                for (const ring of rings) {
+                  const convertedRing = ring.map(pt => [Number(pt[0]), Number(pt[1]), pt.length > 2 ? Number(pt[2]) : 0]);
+
+                  const graphic = new Graphic({
+                    geometry: {
+                      type: "polygon",
+                      rings: [convertedRing],
+                      hasZ: true,
+                      spatialReference: { wkid: 4326 }
+                    },
+                    symbol: {
+                      type: "polygon-3d",
+                      symbolLayers: [{
+                        type: "fill",
+                        material: { color: style.color },
+                        edges: { type: "solid", color: [50,50,50,0.4], size: 0.5 }
+                      }]
+                    }
+                  });
+
+                  exportGraphics.add(graphic);
+                  addedCount++;
+                  if (addedCount % 20 === 0) await new Promise(r => setTimeout(r, 1));
+                }
+              }
+
+              document.getElementById("sourceCount").textContent = `So feature: ~${addedCount} (tổng các file)`;
+              await new Promise(r => setTimeout(r, 50));
+            } catch (e) {
+              console.warn('Error adding export-data graphics', fname, e);
+            }
+          }
+
+          // Auto-align view/model for export-data so it matches the converted geometry
+          try {
+            await alignModel();
+          } catch (e) { console.warn('Auto align failed', e); }
+
+          // cleanup blob URLs when page unloads
+          try {
+            const allBlobUrls = (blobUrls || []).concat(globalBlobUrls || []);
+            if (allBlobUrls.length) {
+              window.addEventListener('unload', function () {
+                for (const u of allBlobUrls) try { URL.revokeObjectURL(u); } catch(e){}
+              });
+            }
+          } catch (e) { /* ignore */ }
+
+          // Update static preview card and reset button (no dynamic DOM creation)
+          try {
+            const imgEl = document.getElementById('locationCardImage');
+            if (imgEl) imgEl.src = './workflow-export-data/images/preview.png';
+            const titleEl = document.getElementById('locationCardTitle');
+            if (titleEl) titleEl.textContent = 'Central Post Office';
+            const textEl = document.getElementById('locationCardText');
+            if (textEl) textEl.textContent = 'District 1, Ho Chi Minh City. Built between 1886-1891 by Gustave Eiffel.';
+            const resetBtn = document.getElementById('resetBtn');
+            if (resetBtn) resetBtn.onclick = function () { flyToModel(); };
+          } catch (e) { /* ignore */ }
+          return;
+        }
+
+        if (!dataUrl) {
+          if (preferredSource === "obj") {
+            document.getElementById("sourceNote").textContent = "Ban dang chon OBJ nhung chua co file compare. Hay chay workflow-obj de tao du lieu.";
+          } else if (preferredSource === "sheet") {
+            document.getElementById("sourceNote").textContent = "Ban dang chon SHEET nhung chua co GeoJSON. Hay chay workflow-sheet.";
+          } else if (preferredSource === "glb") {
+            document.getElementById("sourceNote").textContent = "Ban dang chon GLB nhung chua co model. Them file .glb vao workflow-glb/input-models (ví dụ: model.glb).";
+          } else {
+            document.getElementById("sourceNote").textContent = "Khong tim thay du lieu hop le. Hay chay workflow va nap lai.";
+          }
+          document.getElementById("sourceCount").textContent = "So feature: 0";
+          return;
+        }
+
+        document.getElementById("sourceNote").textContent = `Nguon du lieu dang nap: ${chosen.key.toUpperCase()} - ${dataUrl}`;
+
+        if (chosen.key === "glb") {
+          // track current GLB so we can reposition it later
+          currentGlbUrl = dataUrl;
+          try { if (currentGlbLayer) map.remove(currentGlbLayer); } catch(e){}
+          const cfg = applySourceOverrides(modelConfig, currentSource);
+          currentGlbLayer = makeGlbModelLayer(currentGlbUrl, cfg);
+          map.add(currentGlbLayer);
+          document.getElementById("sourceCount").textContent = "So feature: 1 model (GLB)";
+        } else if (chosen.key === "sheet") {
+          const partStyleMap = await loadSheetPartStyleMap(dataUrl);
+          const partTypes = Array.from(partStyleMap.keys())
+            .filter(function (part) { return !part.startsWith("envelope-"); })
+            .sort();
+
+          partTypes.forEach(function (part) {
+            const style = partStyleMap.get(part) || { color: [217, 192, 127, 0.92], edge: [60, 50, 35, 0.95] };
+            const taxonomy = inferTaxonomy(part);
+            map.add(makePartLayer(dataUrl, `${taxonomy}: ${part}`, [part], 1.0, style.color, style.edge));
+          });
+
+          const countLayer = makePartLayer(dataUrl, "Thong ke", [], 0.01, [0, 0, 0, 0], [0, 0, 0, 0]);
+          countLayer.queryFeatureCount().then(function (count) {
+            document.getElementById("sourceCount").textContent = `So feature: ${count} | So layer part_type: ${partTypes.length}`;
+          }).catch(function () {
+            document.getElementById("sourceCount").textContent = "So feature: khong doc duoc";
+          });
+        } else if (chosen.key === "obj") {
+          const objLayer = makeObjCompareLayer(dataUrl);
+          map.add(objLayer);
+
+          // Prefer await/query to set the feature count and give feedback
+          try {
+            const count = await objLayer.queryFeatureCount();
+            document.getElementById("sourceCount").textContent = `So feature: ${count} tam giac OBJ (mesh)`;
+          } catch (e) {
+            document.getElementById("sourceCount").textContent = "So feature: khong doc duoc";
+          }
+
+          // Robust extent handling: try layer.fullExtent, fallback to queryExtent,
+          // and if still not available, sample some features and compute a bbox.
+          try {
+            await objLayer.when();
+            let extent = objLayer.fullExtent || null;
+            if (!extent) {
+              const q = await objLayer.queryExtent().catch(() => null);
+              extent = (q && q.extent) || null;
+            }
+
+            if (!extent) {
+              // sample up to 200 features and compute bbox from returned geometries
+              const sample = await objLayer.queryFeatures({ where: "1=1", outFields: [], returnGeometry: true, num: 200 }).catch(() => null);
+              if (sample && sample.features && sample.features.length) {
+                let xmin = Infinity, ymin = Infinity, xmax = -Infinity, ymax = -Infinity;
+                for (const f of sample.features) {
+                  const g = f.geometry;
+                  if (!g) continue;
+                  if (g.type === 'polygon' || g.type === 'Polygon') {
+                    const rings = g.rings || g.coordinates || [];
+                    // flatten coordinates to points
+                    const pts = ([]).concat(...(Array.isArray(rings[0]) && Array.isArray(rings[0][0]) ? rings.flat(2) : rings.flat(1)));
+                    for (const pt of pts) {
+                      if (!pt || typeof pt[0] !== 'number') continue;
+                      xmin = Math.min(xmin, pt[0]); ymin = Math.min(ymin, pt[1]);
+                      xmax = Math.max(xmax, pt[0]); ymax = Math.max(ymax, pt[1]);
+                    }
+                  } else if (g.type === 'point' || g.x !== undefined) {
+                    const x = (g.longitude !== undefined) ? g.longitude : g.x;
+                    const y = (g.latitude !== undefined) ? g.latitude : g.y;
+                    if (typeof x === 'number') {
+                      xmin = Math.min(xmin, x); ymin = Math.min(ymin, y);
+                      xmax = Math.max(xmax, x); ymax = Math.max(ymax, y);
+                    }
+                  }
+                }
+                if (isFinite(xmin)) {
+                  extent = { xmin, ymin, xmax, ymax, spatialReference: { wkid: 4326 } };
+                }
+              }
+            }
+
+            if (extent) {
+              // prefer ArcGIS Extent.expand if present
+              try {
+                if (extent.expand) await view.goTo(extent.expand(1.25), { duration: 900 });
+                else {
+                  const cx = (extent.xmin + extent.xmax) / 2;
+                  const cy = (extent.ymin + extent.ymax) / 2;
+                  await view.goTo({ target: [cx, cy], zoom: 19, tilt: 65, heading: 35 }, { duration: 900 });
+                }
+              } catch (e) {
+                await view.goTo({ center: [(extent.xmin + extent.xmax) / 2, (extent.ymin + extent.ymax) / 2], zoom: 19, tilt: 65 }, { duration: 900 }).catch(()=>{});
+              }
+            } else {
+              // final fallback: use configured camera
+              await view.goTo(cameraConfig, { duration: 900 });
+              try { document.getElementById('sourceNote').textContent += ' (OBJ: extent unavailable, using default camera)'; } catch(e){}
+            }
+          } catch (e) {
+            console.warn('OBJ load/goTo failed', e);
+            try { document.getElementById('sourceNote').textContent = `OBJ: lỗi khi nạp (xem console).`; } catch(e){}
+          }
+        }
+
+        const legend = new Legend({ view });
+        view.ui.add(new Expand({ view, content: legend, expanded: false }), "top-right");
+
+        if (chosen.key !== "obj") {
+          flyToModel();
+        }
+      }
+
+      init();
+    });
+  </script>
+</head>
+
+<body>
+  <div class="title">
+    <h1>Bưu điện Trung tâm Sài Gòn</h1>
+    <p>Chọn nguồn dữ liệu để xem mô hình 3D: LoD3 (sheet), OBJ, GLB, hoặc EXPORT-DATA (từng part xuất từ Blender).</p>
+    <div class="source-controls">
+      <select id="sourceSelect" title="Chon nguon du lieu">
+        <option value="auto">AUTO (ưu tiên GLB > SHEET > OBJ > EXPORT-DATA)</option>
+        <option value="glb">GLB</option>
+        <option value="sheet">SHEET</option>
+        <option value="obj">OBJ (COMPARE)</option>
+        <!-- EXPORT-DATA sẽ được thêm động nếu chưa có -->
+      </select>
+      <button id="sourceApplyBtn" type="button">Nạp</button>
+    </div>
+    <div class="source-note" id="sourceNote">Nguồn dữ liệu đang nạp: đang kiểm tra...</div>
+    <div class="source-note" id="sourceCount">Số feature: đang kiểm tra...</div>
+    <div style="margin-top:8px">
+      <button id="resetBtn" type="button" style="padding:6px 8px;border-radius:6px;border:1px solid #d0c5a8;background:#fff;color:#3b311d;cursor:pointer">RESET CAMERA</button>
+      <button id="alignBtn" type="button" style="padding:6px 8px;border-radius:6px;border:1px solid #d0c5a8;background:#fff;color:#3b311d;cursor:pointer;margin-left:8px">ALIGN MODEL</button>
+    </div>
+  </div>
+  <div id="locationCard">
+    <img id="locationCardImage" src="./workflow-export-data/images/preview.png" alt="Central Post Office" />
+    <div class="card-content">
+      <h3 id="locationCardTitle">Central Post Office</h3>
+      <p id="locationCardText">District 1, Ho Chi Minh City. Built between 1886-1891 by Gustave Eiffel.</p>
+    </div>
+  </div>
+  <div id="viewDiv"></div>
+</body>
+</html>

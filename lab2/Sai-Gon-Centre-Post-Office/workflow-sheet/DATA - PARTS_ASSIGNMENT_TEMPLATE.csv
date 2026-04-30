@@ -1,0 +1,27 @@
+member_id,member_name,component,sub_component,task_scope,status,deadline,note
+M01,LEAD - MN,envelope,building_width,nhập chiều rộng tổng thể (1 dòng),todo,,căn chỉnh theo A105+A114
+M01,LEAD - MN,envelope,building_depth,nhập chiều sâu tổng thể (1 dòng),todo,,căn chỉnh theo A105+A114
+M02,PN,facade,column,cập nhật cột mặt đứng (count+cao độ+màu),Done,,A108
+M02,PN,facade,column_cap,cập nhật đầu cột (count+cao độ+màu),Done,,A108
+M03,AV,window,upper_arch,cập nhật cửa sổ vòm tầng trên,todo,,A110+A108
+M03,AV,window,lower_rect,cập nhật cửa sổ chữ nhật tầng dưới,todo,,A110
+M04,TN,roof,wing_left,cập nhật mái cánh trái (số tier+cao độ+màu),todo,,A105+A114
+M04,TN,roof,wing_right,cập nhật mái cánh phải (số tier+cao độ+màu),todo,,A105+A114
+M05,QT,roof,center_pyramid,cập nhật mái kim tự tháp trung tâm,todo,,A105+A114
+M05,QT,entrance,grand_arch,cập nhật khối cổng trung tâm,todo,,A105+A108
+M05,QT,stairs,front_stair,cập nhật bậc tam cấp trước,todo,,A105
+M05,QT,decor,cornice_high,cập nhật phào chỉ trên cao,todo,,A108
+M02,PN,mass,base_mass,cân cao độ khối đế tổng thể,Done,,A105
+M02,PN,mass,main_body,cân cao độ khối thân chính,Done,,A105
+M04,TN,mass,wing_mass,cân khối cánh trái phải,todo,,A105
+M04,TN,mass,wing_mass_left,cân khối cánh trái chi tiết,todo,,A105
+M04,TN,mass,wing_mass_right,cân khối cánh phải chi tiết,todo,,A105
+M05,QT,mass,portal_mass,cân khối cổng chính giữa,todo,,A105+A108
+M05,QT,mass,upper_block,cân khối trên mặt đứng,todo,,A108
+M04,TN,roof,upper_bay,cân số lượng ô mái trên,todo,,A114
+M04,TN,roof,upper_bay_left,cân ô mái trên cánh trái,todo,,A114
+M04,TN,roof,upper_bay_right,cân ô mái trên cánh phải,todo,,A114
+M04,TN,roof,roof_top_bay,cân số tầng mái nhỏ trên cùng,todo,,A114
+M03,AV,entrance,grand_arch_inner,cân phần trong của cổng lớn,todo,,A108
+M03,AV,decor,cornice_low,cân phào chỉ thấp,todo,,A108
+M03,AV,decor,cornice_roof,cân phào chỉ sát mái,todo,,A108

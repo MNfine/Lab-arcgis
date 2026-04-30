@@ -1,0 +1,22 @@
+column_name,vn_label,purpose,data_type,required,allowed_values_or_rule,example,notes
+component_id,Mã thành phần,Định danh dòng tham số,text,yes,duy nhất trong sheet; dạng C + 4 chữ số,C0001,Không trùng nhau
+component,Nhóm thành phần,Phân loại cấp cao để quản lý,text,no,facade|window|roof|entrance|stairs|decor|envelope|mass,roof,Chủ yếu phục vụ quản trị và lọc dữ liệu
+sub_component,Tên thành phần chi tiết,Khóa map vào script build,text,yes,column|column_cap|upper_arch|lower_rect|wing_left|wing_right|center_pyramid|front_stair|grand_arch|cornice_high|building_width|building_depth|base_mass|main_body|wing_mass|wing_mass_left|wing_mass_right|portal_mass|upper_block|upper_bay|upper_bay_left|upper_bay_right|roof_top_bay|grand_arch_inner|cornice_low|cornice_roof,column,Nếu sai chính tả script sẽ bỏ qua hoặc dùng default
+shape_type,Kiểu hình học,Nhãn mô tả kiểu khối,text,no,column_high_rect|column_high_cap_rect|column_low_rect|column_low_cap_rect|column_rect|column_cap_rect|window_arch_rect|window_rect|roof_tier_wing_left|roof_tier_wing_right|wing_mash_left|wing_mash_right|wing_mass_left|wing_mass_right|roof_tier|arch_zone|step_band|cornice_band|scalar|mass_block|roof_bay|roof_center_pyramid|arch_inner,column_rect,"Có thể đặt thêm tên tùy ý khi cần chi tiết
+Không ảnh hưởng trực tiếp đến script hiện tại"
+count,Số lượng phần tử,Điền số phần tử lặp lại cho từng part,integer,yes,số nguyên > 0,12,Ảnh hưởng trực tiếp độ dày chi tiết
+level_name,Tầng/Cao độ tham chiếu,Nhãn mô tả cao độ,text,no,ground|level_1|level_2|roof|all,roof,Dùng để đọc và soát lỗi
+min_height_m,Cao độ chân khối,Độ cao bắt đầu extrude (m),number,yes,>= 0,9.8,Đơn vị mét
+height_m,Cao độ đỉnh khối,Độ cao kết thúc extrude (m),number,yes,>= min_height_m,12.7,Đơn vị mét
+thickness_m,Độ dày tham khảo,Thông số bổ sung cho team,text/number,no,số hoặc auto,0.3,Script hiện tại không đọc trực tiếp
+width_m,Chiều rộng tham số,Dùng cho envelope hoặc ghi chú kích thước,text/number,no,số hoặc auto; building_width nên là số,67.237,Script đọc width_m của sub_component=building_width
+depth_m,Chiều sâu tham số,Dùng cho envelope hoặc ghi chú kích thước,text/number,no,số hoặc auto; building_depth nên là số,22.88,Script đọc depth_m của sub_component=building_depth
+offset_x_m,Dịch chuyển X,Tinh chỉnh vị trí local,text/number,no,số hoặc 0,0,Dự phòng cho mở rộng
+offset_y_m,Dịch chuyển Y,Tinh chỉnh vị trí local,text/number,no,số hoặc 0,0,Dự phòng cho mở rộng
+rotation_deg,Góc xoay,Tinh chỉnh hướng khối,text/number,no,số hoặc 0,0,Dự phòng cho mở rộng
+color_hex,Mã màu vật liệu,Màu render cho part,text,yes,regex ^#[0-9A-Fa-f]{6}$,#E98D69,Dùng định dạng hex 6 ký tự
+material,Loại vật liệu,Nhãn vật liệu để thống kê,text,no,plaster|glass|tile|stone|n/a,tile,Không ràng buộc cứng
+source_ref,Nguồn bản vẽ,Nguồn tham chiếu để truy vết,text,no,mã bản vẽ ngăn cách bởi |,A105|A114,Nên ghi rõ sheet bản vẽ
+modeled_by,Người cập nhật,Người nhập/chỉnh dữ liệu,text,no,tên hoặc mã thành viên,M03,Phục vụ theo dõi tiến độ
+checked_by,Người kiểm tra,Người review nội bộ,text,no,tên hoặc mã thành viên,M01,Khuyến nghị PM hoặc lead
+qa_status,Trạng thái QA,Trạng thái chất lượng dòng dữ liệu,text,no,draft|checked|final,draft,Chỉ final khi đã đối chiếu bản vẽ

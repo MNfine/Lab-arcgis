@@ -1,0 +1,31 @@
+{
+    "type": "FeatureCollection",
+    "generator": "saigonoperahouse",
+    "copyright": "Saigonoperahouse",
+    "timestamp": "2024-11-11T10:03:07Z",
+    "features": [
+      {
+        "type": "Feature",
+        "properties": {
+          "Building name": "lower left  Balcony",
+          "height": 0.25,
+          "idb": "1"
+        },
+        "geometry": {
+          "type": "MultiPolygon",
+          "coordinates": [
+            [
+                [
+                  [106.703005, 10.776608, 10.58],
+                  [106.70300713619886,10.776605901475852,10.58],
+                  [106.70298506929176,10.776580066963117,10.58],
+                          [106.70298293309312,10.776582165487264,10.58]
+                ]
+            ]
+          ]
+        },
+        "id": "2"
+      }
+    ]
+  }
+  

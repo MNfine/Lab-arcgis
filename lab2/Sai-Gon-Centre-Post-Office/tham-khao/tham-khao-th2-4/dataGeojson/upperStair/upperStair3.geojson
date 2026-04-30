@@ -1,0 +1,29 @@
+{
+  "type": "FeatureCollection",
+  "generator": "saigonoperahouse",
+  "copyright": "Saigonoperahouse",
+  "timestamp": "2024-11-11T10:03:07Z",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "Building name": "upperstair 3",
+        "height": 0.11,
+        "idb": "1"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [106.70298929364318, 10.776444363267906, 5.17],
+            [106.70297, 10.776425, 5.17],
+            [106.70302, 10.776381, 5.17],
+            [106.70303717107001, 10.776402204756911, 5.17],
+            [106.70298929364318, 10.776444363267906, 5.17]
+          ]
+        ]
+      },
+      "id": "2"
+    }
+  ]
+}

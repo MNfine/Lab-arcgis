@@ -1,0 +1,29 @@
+{
+  "type": "FeatureCollection",
+  "generator": "saigonoperahouse",
+  "copyright": "Saigonoperahouse",
+  "timestamp": "2024-11-11T10:03:07Z",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "Building name": "stair 18",
+        "height": 0.11,
+        "idb": "1"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [106.70294791588348, 10.776439695698102, 4.84],
+            [106.70294, 10.77643, 4.84],
+            [106.703029, 10.776352, 4.84],
+            [106.70303676131245, 10.776361220037444, 4.84],
+            [106.70294791588348, 10.776439695698102, 4.84]
+          ]
+        ]
+      },
+      "id": "2"
+    }
+  ]
+}

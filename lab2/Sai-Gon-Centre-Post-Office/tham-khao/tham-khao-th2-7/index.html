@@ -1,0 +1,57 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="initial-scale=1,maximum-scale=1,user-scalable=no"
+    />
+    <title>LAB02 IE402.P21 NHÓM 07</title>
+    <link rel="icon" type="image/x-icon" href="images/favicon.ico" />
+    <link rel="stylesheet" href="./styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://js.arcgis.com/4.16/esri/themes/dark/main.css"
+    />
+    <script src="https://js.arcgis.com/4.16/"></script>
+    <script src="script.js"></script>
+  </head>
+
+  <body>
+    <div id="viewDiv"></div>
+
+    <div id="basemapSelect">
+      <span>Loại bản đồ: </span>
+      <select onchange="changeBasemap(this.value)">
+        <option value="dark-gray-vector">Dark Gray Vector (mặc định)</option>
+        <option value="streets-navigation-vector">Đường Phố</option>
+        <option value="streets-night-vector">Đường Phố Dạng Tối</option>
+        <option value="streets-relief-vector">Đường Phố + Địa Hình</option>
+        <option value="streets-vector">Đường Phố Dạng Vector</option>
+        <option value="satellite">Vệ Tinh</option>
+        <option value="osm">Open Street Map</option>
+        <option value="topo-vector">Topographic</option>
+        <option value="terrain">Địa Hình</option>
+        <option value="gray-vector">Xám Đơn Giản</option>
+        <option value="hybrid">Hỗn Hợp</option>
+      </select>
+    </div>
+    <div id="setViewContainer">
+      <button id="resetViewBtn">Quay về góc nhìn mặc định</button>
+    </div>
+    <div id="cameraInfo">Đảng tải thông số camera...</div>
+    <div id="locationInfo">
+      <img
+        id="locationImg"
+        src="./images/dinh-doc-lap.png"
+        alt="Tòa nhà Dinh Độc Lập"
+      />
+      <h4>Tòa nhà Dinh Độc Lập</h4>
+      <p>Phường Bến Thành, Quận 1, Tp Hồ Chí Minh, Việt Nam</p>
+    </div>
+    <div id="locationImgModal" class="modal">
+      <span class="close">&times;</span>
+      <img class="modal-content" id="enlargedLocationImage" />
+      <div id="caption"></div>
+    </div>
+  </body>
+</html>

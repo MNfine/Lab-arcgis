@@ -1,0 +1,49 @@
+{
+    "type": "FeatureCollection",
+    "generator": "saigonoperahouse",
+    "copyright": "Saigonoperahouse",
+    "timestamp": "2024-11-11T10:03:07Z",
+    "features": [
+        {
+            "type": "Feature",
+            "properties": {
+                "Building name": "First right top roof",
+                "height": 0.78,
+                "idb": "1"
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            106.703092,
+                            10.776620,
+                            22.88
+                        ],
+                        [
+                            106.703148,
+                            10.776572,
+                            26.02
+                        ],
+                        [
+                            106.703223,
+                            10.776655,
+                            26.02
+                        ],
+                        [
+                            106.703167,
+                            10.776704,
+                            22.88
+                        ],
+                        [
+                            106.703092,
+                            10.776620,
+                            22.88
+                        ]
+                    ]
+                ]
+            },
+            "id": "2"
+        }
+    ]
+}

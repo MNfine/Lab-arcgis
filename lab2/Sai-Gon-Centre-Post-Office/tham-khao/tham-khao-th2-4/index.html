@@ -1,0 +1,1623 @@
+﻿<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="initial-scale=1,maximum-scale=1,user-scalable=no"
+    />
+    <title>Saigon Opera House</title>
+
+    <style>
+      html,
+      body,
+      #viewDiv {
+        padding: 0;
+        margin: 0;
+        height: 100%;
+        width: 100%;
+      }
+
+      #back {
+        position: absolute;
+        bottom: 20px;
+      }
+
+      #back i {
+        background-image: url(app/public/img/back.svg);
+        background-repeat: no-repeat;
+        display: inline-block;
+        width: 100px;
+        height: 25px;
+        padding-left: 25px;
+        padding-top: 2px;
+        margin: 10px;
+        cursor: pointer;
+        background-size: 20px;
+      }
+    </style>
+
+    <link
+      rel="stylesheet"
+      href="https://js.arcgis.com/4.16/esri/themes/light/main.css"
+    />
+    <script src="https://js.arcgis.com/4.16/"></script>
+    <script src="function.js"></script>
+    <script>
+      require([
+        "esri/Map",
+        "esri/views/SceneView",
+        "esri/layers/GeoJSONLayer",
+        "esri/layers/SceneLayer",
+        "esri/layers/GraphicsLayer",
+        "esri/Graphic",
+        "esri/request",
+      ], function (
+        Map,
+        SceneView,
+        GeoJSONLayer,
+        SceneLayer,
+        GraphicsLayer,
+        Graphic,
+        esriRequest
+      ) {
+        var createGraphic = function (data) {
+          return new Graphic({
+            geometry: data,
+            symbol: data.symbol,
+            attributes: data,
+            popupTemplate: data.popupTemplate,
+          });
+        };
+
+        const json_options = {
+          query: {
+            f: "json",
+          },
+          responseType: "json",
+        };
+        //request json
+        esriRequest("./datajson/roof.json", json_options).then(function (
+          response
+        ) {
+          var graphicsLayer = new GraphicsLayer();
+          console.log(response);
+          response.data.forEach(function (data) {
+            graphicsLayer.add(createGraphic(data));
+          });
+          map.add(graphicsLayer);
+        });
+
+        esriRequest("./datajson/rimCover.json", json_options).then(function (
+          response
+        ) {
+          var graphicsLayer = new GraphicsLayer();
+          console.log(response);
+          response.data.forEach(function (data) {
+            graphicsLayer.add(createGraphic(data));
+          });
+          map.add(graphicsLayer);
+        });
+
+        esriRequest("./datajson/domelv1.json", json_options).then(function (
+          response
+        ) {
+          var graphicsLayer = new GraphicsLayer();
+          console.log(response);
+          response.data.forEach(function (data) {
+            graphicsLayer.add(createGraphic(data));
+          });
+          map.add(graphicsLayer);
+        });
+
+        esriRequest("./datajson/window.json", json_options).then(function (
+          response
+        ) {
+          var graphicsLayer = new GraphicsLayer();
+          console.log(response);
+          response.data.forEach(function (data) {
+            graphicsLayer.add(createGraphic(data));
+          });
+          map.add(graphicsLayer);
+        });
+
+        esriRequest("./datajson/window2.json", json_options).then(function (
+          response
+        ) {
+          var graphicsLayer = new GraphicsLayer();
+          console.log(response);
+          response.data.forEach(function (data) {
+            graphicsLayer.add(createGraphic(data));
+          });
+          map.add(graphicsLayer);
+        });
+        esriRequest("./datajson/windowCover.json", json_options).then(function (
+          response
+        ) {
+          var graphicsLayer = new GraphicsLayer();
+          console.log(response);
+          response.data.forEach(function (data) {
+            graphicsLayer.add(createGraphic(data));
+          });
+          map.add(graphicsLayer);
+        });
+
+        esriRequest("./datajson/windowBack.json", json_options).then(function (
+          response
+        ) {
+          var graphicsLayer = new GraphicsLayer();
+          console.log(response);
+          response.data.forEach(function (data) {
+            graphicsLayer.add(createGraphic(data));
+          });
+          map.add(graphicsLayer);
+        });
+        
+        const bottomLayer = new GeoJSONLayer({
+          url: "./dataGeojson/bottom.geojson",
+        });
+
+        console.log("hiep", bottomLayer);
+        bottomLayer.renderer = {
+          type: "simple",
+          symbol: {
+            type: "polygon-3d",
+            symbolLayers: [
+              {
+                type: "extrude",
+                size: 1.95,
+                material: {
+                  color: "#88644a",
+                },
+              },
+            ],
+          },
+        };
+
+        const bottomInsideLayer = new GeoJSONLayer({
+          url: "./dataGeojson/bottomInside.geojson",
+        });
+        bottomInsideLayer.renderer = {
+          type: "simple",
+          symbol: {
+            type: "polygon-3d",
+            symbolLayers: [
+              {
+                type: "extrude",
+                size: 1.95,
+                material: {
+                  color: "#4a4a4a",
+                },
+              },
+            ],
+          },
+        };
+
+        const bodyLayer = new GeoJSONLayer({
+          url: "./dataGeojson/body.geojson",
+        });
+        bodyLayer.renderer = {
+          type: "simple",
+          symbol: {
+            type: "polygon-3d",
+            symbolLayers: [
+              {
+                type: "extrude",
+                size: 1.95,
+                material: {
+                  color: "#ded6cc",
+                },
+              },
+            ],
+          },
+        };
+
+        const rimRightLayer = new GeoJSONLayer({
+          url: "./dataGeojson/rimRight.geojson",
+        });
+        rimRightLayer.renderer = {
+          type: "simple",
+          symbol: {
+            type: "polygon-3d",
+            symbolLayers: [
+              {
+                type: "extrude",
+                size: 0.97,
+                material: {
+                  color: "#ded6cc",
+                },
+              },
+            ],
+          },
+        };
+
+        const rimLeftLayer = new GeoJSONLayer({
+          url: "./dataGeojson/rimLeft.geojson",
+        });
+        rimLeftLayer.renderer = {
+          type: "simple",
+          symbol: {
+            type: "polygon-3d",
+            symbolLayers: [
+              {
+                type: "extrude",
+                size: 0.99,
+                material: {
+                  color: "#ded6cc",
+                },
+              },
+            ],
+          },
+        };
+
+        const bodyTopLayer = new GeoJSONLayer({
+          url: "./dataGeojson/bodyTop.geojson",
+        });
+        bodyTopLayer.renderer = {
+          type: "simple",
+          symbol: {
+            type: "polygon-3d",
+            symbolLayers: [
+              {
+                type: "extrude",
+                size: 1.75,
+                material: {
+                  color: "#ded6cc",
+                },
+              },
+            ],
+          },
+        };
+
+        const bodylv1Layer = new GeoJSONLayer({
+          url: "./dataGeojson/body/bodylv1.geojson",
+        });
+        bodylv1Layer.renderer = {
+          type: "simple",
+          symbol: {
+            type: "polygon-3d",
+            symbolLayers: [
+              {
+                type: "extrude",
+                size: 7.51,
+                material: {
+                  color: "#EDE3F3",
+                },
+              },
+            ],
+          },
+        };
+
+        const bodylv1_2Layer = new GeoJSONLayer({
+          url: "./dataGeojson/body/bodylv1_2.geojson",
+        });
+        bodylv1_2Layer.renderer = {
+          type: "simple",
+          symbol: {
+            type: "polygon-3d",
+            symbolLayers: [
+              {
+                type: "extrude",
+                size: 2.5,
+                material: {
+                  color: "#EDE3F3",
+                },
+              },
+            ],
+          },
+        };
+
+        const bodyAroundLayer = new GeoJSONLayer({
+          url: "./dataGeojson/body/bodyAround.geojson",
+        });
+        bodyAroundLayer.renderer = {
+          type: "simple",
+          symbol: {
+            type: "polygon-3d",
+            symbolLayers: [
+              {
+                type: "extrude",
+                size: 0.08,
+                material: {
+                  color: "#CFCFCF",
+                },
+              },
+            ],
+          },
+        };
+
+        const bodylvfinalLayer = new GeoJSONLayer({
+          url: "./dataGeojson/body/bodylvfinal.geojson",
+        });
+        bodylvfinalLayer.renderer = {
+          type: "simple",
+          symbol: {
+            type: "polygon-3d",
+            symbolLayers: [
+              {
+                type: "extrude",
+                size: 10.66,
+                material: {
+                  color: "#4a4a4a",
+                },
+              },
+            ],
+          },
+        };
+
+        const stairLayer = new GeoJSONLayer({
+          url: "./dataGeojson/stair/stair.geojson",
+        });
+        stairLayer.renderer = {
+          type: "simple",
+          symbol: {
+            type: "polygon-3d",
+            symbolLayers: [
+              {
+                type: "extrude",
+                size: 0.11,
+                material: {
+                  color: "#8c8c8c",
+                },
+              },
+            ],
+          },
+        };
+
+        const stair2Layer = new GeoJSONLayer({
+          url: "./dataGeojson/stair/stair2.geojson",
+        });
+        stair2Layer.renderer = {
+          type: "simple",
+          symbol: {
+            type: "polygon-3d",
+            symbolLayers: [
+              {
+                type: "extrude",
+                size: 0.11,
+                material: {
+                  color: "#8c8c8c",
+                },
+              },
+            ],
+          },
+        };
+
+        const stair3Layer = new GeoJSONLayer({
+          url: "./dataGeojson/stair/stair3.geojson",
+        });
+        stair3Layer.renderer = {
+          type: "simple",
+          symbol: {
+            type: "polygon-3d",
+            symbolLayers: [
+              {
+                type: "extrude",
+                size: 0.11,
+                material: {
+                  color: "#8c8c8c",
+                },
+              },
+            ],
+          },
+        };
+
+        const stair4Layer = new GeoJSONLayer({
+          url: "./dataGeojson/stair/stair4.geojson",
+        });
+        stair4Layer.renderer = {
+          type: "simple",
+          symbol: {
+            type: "polygon-3d",
+            symbolLayers: [
+              {
+                type: "extrude",
+                size: 0.11,
+                material: {
+                  color: "#8c8c8c",
+                },
+              },
+            ],
+          },
+        };
+
+        const stair5Layer = new GeoJSONLayer({
+          url: "./dataGeojson/stair/stair5.geojson",
+        });
+        stair5Layer.renderer = {
+          type: "simple",
+          symbol: {
+            type: "polygon-3d",
+            symbolLayers: [
+              {
+                type: "extrude",
+                size: 0.11,
+                material: {
+                  color: "#8c8c8c",
+                },
+              },
+            ],
+          },
+        };
+
+        const stair6Layer = new GeoJSONLayer({
+          url: "./dataGeojson/stair/stair6.geojson",
+        });
+        stair6Layer.renderer = {
+          type: "simple",
+          symbol: {
+            type: "polygon-3d",
+            symbolLayers: [
+              {
+                type: "extrude",
+                size: 0.11,
+                material: {
+                  color: "#8c8c8c",
+                },
+              },
+            ],
+          },
+        };
+
+        const stair7Layer = new GeoJSONLayer({
+          url: "./dataGeojson/stair/stair7.geojson",
+        });
+        stair7Layer.renderer = {
+          type: "simple",
+          symbol: {
+            type: "polygon-3d",
+            symbolLayers: [
+              {
+                type: "extrude",
+                size: 0.11,
+                material: {
+                  color: "#8c8c8c",
+                },
+              },
+            ],
+          },
+        };
+
+        const stair8Layer = new GeoJSONLayer({
+          url: "./dataGeojson/stair/stair8.geojson",
+        });
+        stair8Layer.renderer = {
+          type: "simple",
+          symbol: {
+            type: "polygon-3d",
+            symbolLayers: [
+              {
+                type: "extrude",
+                size: 0.11,
+                material: {
+                  color: "#8c8c8c",
+                },
+              },
+            ],
+          },
+        };
+
+        const stair9Layer = new GeoJSONLayer({
+          url: "./dataGeojson/stair/stair9.geojson",
+        });
+        stair9Layer.renderer = {
+          type: "simple",
+          symbol: {
+            type: "polygon-3d",
+            symbolLayers: [
+              {
+                type: "extrude",
+                size: 0.11,
+                material: {
+                  color: "#8c8c8c",
+                },
+              },
+            ],
+          },
+        };
+
+        const stair10Layer = new GeoJSONLayer({
+          url: "./dataGeojson/stair/stair10.geojson",
+        });
+        stair10Layer.renderer = {
+          type: "simple",
+          symbol: {
+            type: "polygon-3d",
+            symbolLayers: [
+              {
+                type: "extrude",
+                size: 0.11,
+                material: {
+                  color: "#8c8c8c",
+                },
+              },
+            ],
+          },
+        };
+
+        const stair11Layer = new GeoJSONLayer({
+          url: "./dataGeojson/stair/stair11.geojson",
+        });
+        stair11Layer.renderer = {
+          type: "simple",
+          symbol: {
+            type: "polygon-3d",
+            symbolLayers: [
+              {
+                type: "extrude",
+                size: 0.11,
+                material: {
+                  color: "#8c8c8c",
+                },
+              },
+            ],
+          },
+        };
+
+        const stair12Layer = new GeoJSONLayer({
+          url: "./dataGeojson/stair/stair12.geojson",
+        });
+        stair12Layer.renderer = {
+          type: "simple",
+          symbol: {
+            type: "polygon-3d",
+            symbolLayers: [
+              {
+                type: "extrude",
+                size: 0.11,
+                material: {
+                  color: "#8c8c8c",
+                },
+              },
+            ],
+          },
+        };
+
+        const stair13Layer = new GeoJSONLayer({
+          url: "./dataGeojson/stair/stair13.geojson",
+        });
+        stair13Layer.renderer = {
+          type: "simple",
+          symbol: {
+            type: "polygon-3d",
+            symbolLayers: [
+              {
+                type: "extrude",
+                size: 0.11,
+                material: {
+                  color: "#8c8c8c",
+                },
+              },
+            ],
+          },
+        };
+
+        const stair14Layer = new GeoJSONLayer({
+          url: "./dataGeojson/stair/stair14.geojson",
+        });
+        stair14Layer.renderer = {
+          type: "simple",
+          symbol: {
+            type: "polygon-3d",
+            symbolLayers: [
+              {
+                type: "extrude",
+                size: 0.11,
+                material: {
+                  color: "#8c8c8c",
+                },
+              },
+            ],
+          },
+        };
+
+        const stair15Layer = new GeoJSONLayer({
+          url: "./dataGeojson/stair/stair15.geojson",
+        });
+        stair15Layer.renderer = {
+          type: "simple",
+          symbol: {
+            type: "polygon-3d",
+            symbolLayers: [
+              {
+                type: "extrude",
+                size: 0.11,
+                material: {
+                  color: "#8c8c8c",
+                },
+              },
+            ],
+          },
+        };
+
+        const stair16Layer = new GeoJSONLayer({
+          url: "./dataGeojson/stair/stair16.geojson",
+        });
+        stair16Layer.renderer = {
+          type: "simple",
+          symbol: {
+            type: "polygon-3d",
+            symbolLayers: [
+              {
+                type: "extrude",
+                size: 0.11,
+                material: {
+                  color: "#8c8c8c",
+                },
+              },
+            ],
+          },
+        };
+
+        const stair17Layer = new GeoJSONLayer({
+          url: "./dataGeojson/stair/stair17.geojson",
+        });
+        stair17Layer.renderer = {
+          type: "simple",
+          symbol: {
+            type: "polygon-3d",
+            symbolLayers: [
+              {
+                type: "extrude",
+                size: 0.11,
+                material: {
+                  color: "#8c8c8c",
+                },
+              },
+            ],
+          },
+        };
+
+        const stair18Layer = new GeoJSONLayer({
+          url: "./dataGeojson/stair/stair18.geojson",
+        });
+        stair18Layer.renderer = {
+          type: "simple",
+          symbol: {
+            type: "polygon-3d",
+            symbolLayers: [
+              {
+                type: "extrude",
+                size: 0.12,
+                material: {
+                  color: "#8c8c8c",
+                },
+              },
+            ],
+          },
+        };
+
+        const roofBorderLayer = new GeoJSONLayer({
+          url: "./dataGeojson/roofBorder.geojson",
+        });
+        roofBorderLayer.renderer = {
+          type: "simple",
+          symbol: {
+            type: "polygon-3d",
+            symbolLayers: [
+              {
+                type: "extrude",
+                size: 0.32,
+                material: {
+                  color: "#cfcfcf",
+                },
+              },
+            ],
+          },
+        };
+
+        const roofBorderLower = new GeoJSONLayer({
+          url: "./dataGeojson/roofBorderLower.geojson",
+        });
+        roofBorderLower.renderer = {
+          type: "simple",
+          symbol: {
+            type: "polygon-3d",
+            symbolLayers: [
+              {
+                type: "extrude",
+                size: 0.33,
+                material: {
+                  color: "#cfcfcf",
+                },
+              },
+            ],
+          },
+        };
+
+        const roofBorderSecondLayer = new GeoJSONLayer({
+          url: "./dataGeojson/roofBorderSecond.geojson",
+        });
+        roofBorderSecondLayer.renderer = {
+          type: "simple",
+          symbol: {
+            type: "polygon-3d",
+            symbolLayers: [
+              {
+                type: "extrude",
+                size: 0.72,
+                material: {
+                  color: "#b4ae9c",
+                },
+              },
+            ],
+          },
+        };
+
+        const firstLeftTopRoof = new GeoJSONLayer({
+          url: "./dataGeojson/firstLeftTopRoof.geojson",
+        });
+        firstLeftTopRoof.renderer = {
+          type: "simple",
+          symbol: {
+            type: "polygon-3d",
+            symbolLayers: [
+              {
+                type: "extrude",
+                size: 0.78,
+                material: {
+                  color: "#808080",
+                },
+              },
+            ],
+          },
+        };
+
+        const firstRightTopRoof = new GeoJSONLayer({
+          url: "./dataGeojson/firstRightTopRoof.geojson",
+        });
+        firstRightTopRoof.renderer = {
+          type: "simple",
+          symbol: {
+            type: "polygon-3d",
+            symbolLayers: [
+              {
+                type: "extrude",
+                size: 0.78,
+                material: {
+                  color: "#808080",
+                },
+              },
+            ],
+          },
+        };
+
+        const secondLeftTopRoof = new GeoJSONLayer({
+          url: "./dataGeojson/secondLeftTopRoof.geojson",
+        });
+        secondLeftTopRoof.renderer = {
+          type: "simple",
+          symbol: {
+            type: "polygon-3d",
+            symbolLayers: [
+              {
+                type: "extrude",
+                size: 0.78,
+                material: {
+                  color: "#808080",
+                },
+              },
+            ],
+          },
+        };
+
+        const secondRightTopRoof = new GeoJSONLayer({
+          url: "./dataGeojson/secondRightTopRoof.geojson",
+        });
+        secondRightTopRoof.renderer = {
+          type: "simple",
+          symbol: {
+            type: "polygon-3d",
+            symbolLayers: [
+              {
+                type: "extrude",
+                size: 0.78,
+                material: {
+                  color: "#808080",
+                },
+              },
+            ],
+          },
+        };
+
+        const bottomPrism = new GeoJSONLayer({
+          url: "./dataGeojson/frontPrism/bottomPrism.geojson",
+        });
+        bottomPrism.renderer = {
+          type: "simple",
+          symbol: {
+            type: "polygon-3d",
+            symbolLayers: [
+              {
+                type: "extrude",
+                size: 1.94,
+                material: {
+                  color: "#ded6cc",
+                },
+              },
+            ],
+          },
+        };
+
+        const circle1 = new GeoJSONLayer({
+          url: "./dataGeojson/frontPrism/circle1.geojson",
+        });
+        circle1.renderer = {
+          type: "simple",
+          symbol: {
+            type: "polygon-3d",
+            symbolLayers: [
+              {
+                type: "extrude",
+                size: 0.31,
+                material: {
+                  color: "#dbdbdb",
+                },
+              },
+            ],
+          },
+        };
+
+        const prism = new GeoJSONLayer({
+          url: "./dataGeojson/frontPrism/prism.geojson",
+        });
+        prism.renderer = {
+          type: "simple",
+          symbol: {
+            type: "polygon-3d",
+            symbolLayers: [
+              {
+                type: "extrude",
+                size: 7.52,
+                material: {
+                  color: "#cdb49e",
+                },
+              },
+            ],
+          },
+        };
+        const prism2 = new GeoJSONLayer({
+          url: "./dataGeojson/frontPrism/prism2.geojson",
+        });
+        prism2.renderer = {
+          type: "simple",
+          symbol: {
+            type: "polygon-3d",
+            symbolLayers: [
+              {
+                type: "extrude",
+                size: 4.44,
+                material: {
+                  color: "#9e998a",
+                },
+              },
+            ],
+          },
+        };
+
+        const bottomPrismRight = new GeoJSONLayer({
+          url: "./dataGeojson/frontPrism/bottomPrismRight.geojson",
+        });
+        bottomPrismRight.renderer = {
+          type: "simple",
+          symbol: {
+            type: "polygon-3d",
+            symbolLayers: [
+              {
+                type: "extrude",
+                size: 0.26,
+                material: {
+                  color: "#9e9e9e",
+                },
+              },
+            ],
+          },
+        };
+
+        const pedestal = new GeoJSONLayer({
+          url: "./dataGeojson/frontPrism/pedestal.geojson",
+        });
+        pedestal.renderer = {
+          type: "simple",
+          symbol: {
+            type: "polygon-3d",
+            symbolLayers: [
+              {
+                type: "extrude",
+                size: 0.97,
+                material: {
+                  color: "#454545",
+                },
+              },
+            ],
+          },
+        };
+
+        const pedestalHigher = new GeoJSONLayer({
+          url: "./dataGeojson/frontPrism/pedestalHigher.geojson",
+        });
+        pedestalHigher.renderer = {
+          type: "simple",
+          symbol: {
+            type: "polygon-3d",
+            symbolLayers: [
+              {
+                type: "extrude",
+                size: 0.21,
+                material: {
+                  color: "#9e9e9e",
+                },
+              },
+            ],
+          },
+        };
+
+        const bacolonylv1 = new GeoJSONLayer({
+          url: "./dataGeojson/frontBacolony/bacolonylv1.geojson",
+        });
+        bacolonylv1.renderer = {
+          type: "simple",
+          symbol: {
+            type: "polygon-3d",
+            symbolLayers: [
+              {
+                type: "extrude",
+                size: 0.49,
+                material: {
+                  color: "#ded6cc",
+                },
+              },
+            ],
+          },
+        };
+
+        const bacolonylv2 = new GeoJSONLayer({
+          url: "./dataGeojson/frontBacolony/bacolonylv2.geojson",
+        });
+        bacolonylv2.renderer = {
+          type: "simple",
+          symbol: {
+            type: "polygon-3d",
+            symbolLayers: [
+              {
+                type: "extrude",
+                size: 0.07,
+                material: {
+                  color: "#cfcfcf",
+                },
+              },
+            ],
+          },
+        };
+
+        const bacolonylv3 = new GeoJSONLayer({
+          url: "./dataGeojson/frontBacolony/bacolonylv3.geojson",
+        });
+        bacolonylv3.renderer = {
+          type: "simple",
+          symbol: {
+            type: "polygon-3d",
+            symbolLayers: [
+              {
+                type: "extrude",
+                size: 0.16,
+                material: {
+                  color: "#cfcfcf",
+                },
+              },
+            ],
+          },
+        };
+
+        const bacolony2 = new GeoJSONLayer({
+          url: "./dataGeojson/frontBacolony/bacolony2.geojson",
+        });
+        bacolony2.renderer = {
+          type: "simple",
+          symbol: {
+            type: "polygon-3d",
+            symbolLayers: [
+              {
+                type: "extrude",
+                size: 0.05,
+                material: {
+                  color: "#694d36",
+                },
+              },
+            ],
+          },
+        };
+
+        const dome = new GeoJSONLayer({
+          url: "./dataGeojson/dome/dome.geojson",
+        });
+        dome.renderer = {
+          type: "simple",
+          symbol: {
+            type: "polygon-3d",
+            symbolLayers: [
+              {
+                type: "extrude",
+                size: 0.6,
+                material: {
+                  color: "#cfcfcf",
+                },
+              },
+            ],
+          },
+        };
+
+        const domelower = new GeoJSONLayer({
+          url: "./dataGeojson/dome/domelower.geojson",
+        });
+        domelower.renderer = {
+          type: "simple",
+          symbol: {
+            type: "polygon-3d",
+            symbolLayers: [
+              {
+                type: "extrude",
+                size: 0.6,
+                material: {
+                  color: "#cfcfcf",
+                },
+              },
+            ],
+          },
+        };
+
+        const dome2 = new GeoJSONLayer({
+          url: "./dataGeojson/dome/dome2.geojson",
+        });
+        dome2.renderer = {
+          type: "simple",
+          symbol: {
+            type: "polygon-3d",
+            symbolLayers: [
+              {
+                type: "extrude",
+                size: 1.45,
+                material: {
+                  color: "#cfcfcf",
+                },
+              },
+            ],
+          },
+        };
+
+        const dome2lower = new GeoJSONLayer({
+          url: "./dataGeojson/dome/dome2lower.geojson",
+        });
+        dome2lower.renderer = {
+          type: "simple",
+          symbol: {
+            type: "polygon-3d",
+            symbolLayers: [
+              {
+                type: "extrude",
+                size: 1.51,
+                material: {
+                  color: "#cfcfcf",
+                },
+              },
+            ],
+          },
+        };
+
+        const wallPrism = new GeoJSONLayer({
+          url: "./dataGeojson/wallPrism/wallPrism.geojson",
+        });
+        wallPrism.renderer = {
+          type: "simple",
+          symbol: {
+            type: "polygon-3d",
+            symbolLayers: [
+              {
+                type: "extrude",
+                size: 7.71,
+                material: {
+                  color: "#bca38f",
+                },
+              },
+            ],
+          },
+        };
+
+        const wallPrism2 = new GeoJSONLayer({
+          url: "./dataGeojson/wallPrism/wallPrism2.geojson",
+        });
+        wallPrism2.renderer = {
+          type: "simple",
+          symbol: {
+            type: "polygon-3d",
+            symbolLayers: [
+              {
+                type: "extrude",
+                size: 0.61,
+                material: {
+                  color: "#cfcfcf",
+                },
+              },
+            ],
+          },
+        };
+
+        const wallPrism3 = new GeoJSONLayer({
+          url: "./dataGeojson/wallPrism/wallPrism3.geojson",
+        });
+        wallPrism3.renderer = {
+          type: "simple",
+          symbol: {
+            type: "polygon-3d",
+            symbolLayers: [
+              {
+                type: "extrude",
+                size: 0.75,
+                material: {
+                  color: "#b4ae9c",
+                },
+              },
+            ],
+          },
+        };
+
+        const wallPrismBottom = new GeoJSONLayer({
+          url: "./dataGeojson/wallPrism/wallPrismBottom.geojson",
+        });
+        wallPrismBottom.renderer = {
+          type: "simple",
+          symbol: {
+            type: "polygon-3d",
+            symbolLayers: [
+              {
+                type: "extrude",
+                size: 0.37,
+                material: {
+                  color: "#dbdbdb",
+                },
+              },
+            ],
+          },
+        };
+
+        const wallPrismBottom2 = new GeoJSONLayer({
+          url: "./dataGeojson/wallPrism/wallPrismBottom2.geojson",
+        });
+        wallPrismBottom2.renderer = {
+          type: "simple",
+          symbol: {
+            type: "polygon-3d",
+            symbolLayers: [
+              {
+                type: "extrude",
+                size: 0.36,
+                material: {
+                  color: "#E8E8E8",
+                },
+              },
+            ],
+          },
+        };
+
+        const frontBalcony2 = new GeoJSONLayer({
+          url: "./dataGeojson/frontBalcony2/frontBalcony2.geojson",
+        });
+        frontBalcony2.renderer = {
+          type: "simple",
+          symbol: {
+            type: "polygon-3d",
+            symbolLayers: [
+              {
+                type: "extrude",
+                size: 0.16,
+                material: {
+                  color: "#E8E8E8",
+                },
+              },
+            ],
+          },
+        };
+        const backBalcony1 = new GeoJSONLayer({
+          url: "./dataGeojson/backBalcony/backBalcony1.geojson",
+        });
+        backBalcony1.renderer = {
+          type: "simple",
+          symbol: {
+            type: "polygon-3d",
+            symbolLayers: [
+              {
+                type: "extrude",
+                size: 0.25,
+                material: {
+                  color: "#E8E8E8",
+                },
+              },
+            ],
+          },
+        };
+        const backBalcony2 = new GeoJSONLayer({
+          url: "./dataGeojson/backBalcony/backBalcony2.geojson",
+        });
+        backBalcony2.renderer = {
+          type: "simple",
+          symbol: {
+            type: "polygon-3d",
+            symbolLayers: [
+              {
+                type: "extrude",
+                size: 0.25,
+                material: {
+                  color: "#E8E8E8",
+                },
+              },
+            ],
+          },
+        };
+
+        const backBalcony3 = new GeoJSONLayer({
+          url: "./dataGeojson/backBalcony/backBalcony3.geojson",
+        });
+        backBalcony3.renderer = {
+          type: "simple",
+          symbol: {
+            type: "polygon-3d",
+            symbolLayers: [
+              {
+                type: "extrude",
+                size: 0.25,
+                material: {
+                  color: "#E8E8E8",
+                },
+              },
+            ],
+          },
+        };
+
+        // Upper Stair
+        const upperStairLayer = new GeoJSONLayer({
+          url: "./dataGeojson/upperStair/upperStair.geojson",
+        });
+        upperStairLayer.renderer = {
+          type: "simple",
+          symbol: {
+            type: "polygon-3d",
+            symbolLayers: [
+              {
+                type: "extrude",
+                size: 0.11,
+                material: {
+                  color: "#8c8c8c",
+                },
+              },
+            ],
+          },
+        };
+        const rightBalcony = new GeoJSONLayer({
+          url: "./dataGeojson/leftRightBalcony/rightBalcony.geojson",
+        });
+        rightBalcony.renderer = {
+          type: "simple",
+          symbol: {
+            type: "polygon-3d",
+            symbolLayers: [
+              {
+                type: "extrude",
+                size: 0.25,
+                material: {
+                  color: "#E8E8E8",
+                },
+              },
+            ],
+          },
+        };
+        const leftBalcony = new GeoJSONLayer({
+          url: "./dataGeojson/leftRightBalcony/leftBalcony.geojson",
+        });
+        leftBalcony.renderer = {
+          type: "simple",
+          symbol: {
+            type: "polygon-3d",
+            symbolLayers: [
+              {
+                type: "extrude",
+                size: 0.25,
+                material: {
+                  color: "#E8E8E8",
+                },
+              },
+            ],
+          },
+        };
+        const lowerLeftBalcony = new GeoJSONLayer({
+          url: "./dataGeojson/leftRightBalcony/lowerLeftBalcony.geojson",
+        });
+        lowerLeftBalcony.renderer = {
+          type: "simple",
+          symbol: {
+            type: "polygon-3d",
+            symbolLayers: [
+              {
+                type: "extrude",
+                size: 0.25,
+                material: {
+                  color: "#ddd6cc",
+                },
+              },
+            ],
+          },
+        };
+        const pillarLeftBalcony = new GeoJSONLayer({
+          url: "./dataGeojson/leftRightBalcony/pillarLeftBalcony.geojson",
+        });
+        pillarLeftBalcony.renderer = {
+          type: "simple",
+          symbol: {
+            type: "polygon-3d",
+            symbolLayers: [
+              {
+                type: "extrude",
+                size: 1.88,
+                material: {
+                  color: "#5d5b57",
+                },
+              },
+            ],
+          },
+        };
+        const tileLeftBalcony = new GeoJSONLayer({
+          url: "./dataGeojson/leftRightBalcony/tileLeftBalcony.geojson",
+        });
+        tileLeftBalcony.renderer = {
+          type: "simple",
+          symbol: {
+            type: "polygon-3d",
+            symbolLayers: [
+              {
+                type: "extrude",
+                size: 0.12,
+                material: {
+                  color: "#cfcfcf",
+                },
+              },
+            ],
+          },
+        };
+
+        const upperStairLayer2 = new GeoJSONLayer({
+          url: "./dataGeojson/upperStair/upperStair2.geojson",
+        });
+        upperStairLayer2.renderer = {
+          type: "simple",
+          symbol: {
+            type: "polygon-3d",
+            symbolLayers: [
+              {
+                type: "extrude",
+                size: 0.11,
+                material: {
+                  color: "#8c8c8c",
+                },
+              },
+            ],
+          },
+        };
+        const upperRightBalcony = new GeoJSONLayer({
+          url: "./dataGeojson/leftRightBalcony/upperRightBalcony.geojson",
+        });
+        upperRightBalcony.renderer = {
+          type: "simple",
+          symbol: {
+            type: "polygon-3d",
+            symbolLayers: [
+              {
+                type: "extrude",
+                size: 0.72,
+                material: {
+                  color: "#E8E8E8",
+                },
+              },
+            ],
+          },
+        };
+        const upperLeftBalcony = new GeoJSONLayer({
+          url: "./dataGeojson/leftRightBalcony/upperLeftBalcony.geojson",
+        });
+        upperLeftBalcony.renderer = {
+          type: "simple",
+          symbol: {
+            type: "polygon-3d",
+            symbolLayers: [
+              {
+                type: "extrude",
+                size: 0.72,
+                material: {
+                  color: "#E8E8E8",
+                },
+              },
+            ],
+          },
+        };
+
+        const upperStairLayer3 = new GeoJSONLayer({
+          url: "./dataGeojson/upperStair/upperStair3.geojson",
+        });
+        upperStairLayer3.renderer = {
+          type: "simple",
+          symbol: {
+            type: "polygon-3d",
+            symbolLayers: [
+              {
+                type: "extrude",
+                size: 0.11,
+                material: {
+                  color: "#8c8c8c",
+                },
+              },
+            ],
+          },
+        };
+
+        const btWindowEdge = new GeoJSONLayer({
+          url: "./dataGeojson/btWindowEdge/btWindowEdge.geojson",
+        });
+        btWindowEdge.renderer = {
+          type: "simple",
+          symbol: {
+            type: "polygon-3d",
+            symbolLayers: [
+              {
+                type: "extrude",
+                size: 1.21,
+                material: {
+                  color: "#fff",
+                },
+              },
+            ],
+          },
+        };
+
+        const btWindowArc = new GeoJSONLayer({
+          url: "./dataGeojson/btWindowEdge/btWindowArc.geojson",
+        });
+        btWindowArc.renderer = {
+          type: "simple",
+          symbol: {
+            type: "polygon-3d",
+            symbolLayers: [
+              {
+                type: "extrude",
+                size: 0.11,
+                material: {
+                  color: "#fff",
+                },
+              },
+            ],
+          },
+        };
+
+        const window = new GeoJSONLayer({
+          url: "./dataGeojson/window/window.geojson",
+        });
+        window.renderer = {
+          type: "simple",
+          symbol: {
+            type: "polygon-3d",
+            symbolLayers: [
+              {
+                type: "extrude",
+                size: 0.6,
+                material: {
+                  color: "#ff0000",
+                },
+              },
+            ],
+          },
+        };
+
+        const map = new Map({
+          basemap: "topo-vector",
+          ground: "world-elevation",
+          layers: [
+            bottomLayer,
+            bodyLayer,
+            rimRightLayer,
+            rimLeftLayer,
+            bodyTopLayer,
+            bodylv1Layer,
+            bodylv1_2Layer,
+            bodyAroundLayer,
+            bodylvfinalLayer,
+
+            stairLayer,
+            stair2Layer,
+            stair3Layer,
+            stair4Layer,
+            stair5Layer,
+            stair6Layer,
+            stair7Layer,
+            stair8Layer,
+            stair9Layer,
+            stair10Layer,
+            stair11Layer,
+            stair12Layer,
+            stair13Layer,
+            stair14Layer,
+            stair15Layer,
+            stair16Layer,
+            stair17Layer,
+            stair18Layer,
+
+            roofBorderLayer,
+            roofBorderLower,
+            roofBorderSecondLayer,
+            firstLeftTopRoof,
+            firstRightTopRoof,
+            secondLeftTopRoof,
+            secondRightTopRoof,
+
+            // bottomPrism,
+            circle1,
+            bottomPrismRight,
+            prism,
+            prism2,
+            pedestal,
+            pedestalHigher,
+
+            bacolonylv1,
+            bacolonylv2,
+            bacolonylv3,
+            bacolony2,
+
+            wallPrism,
+            wallPrism2,
+            wallPrism3,
+            wallPrismBottom,
+            wallPrismBottom2,
+            dome,
+            domelower,
+            dome2,
+            dome2lower,
+            //upper stair
+            upperStairLayer,
+            upperStairLayer2,
+            upperStairLayer3,
+
+            bottomInsideLayer,
+
+            btWindowEdge,
+            //Balcony
+            backBalcony1,
+            backBalcony2,
+            backBalcony3,
+            frontBalcony2,
+            leftBalcony,
+            upperLeftBalcony,
+            lowerLeftBalcony,
+            pillarLeftBalcony,
+            tileLeftBalcony,
+            rightBalcony,
+            upperRightBalcony,
+            //window,
+          ], //end layers
+        });
+
+        const view = new SceneView({
+          container: "viewDiv",
+          map: map,
+          camera: {
+            position: [106.70117749271675, 10.776408362678433, 60],
+            heading: 90,
+            tilt: 80,
+          },
+        });
+
+        view.popup.defaultPopupTemplateEnabled = true;
+      });
+    </script>
+  </head>
+
+  <body>
+    <div id="viewDiv"></div>
+  </body>
+</html>
+

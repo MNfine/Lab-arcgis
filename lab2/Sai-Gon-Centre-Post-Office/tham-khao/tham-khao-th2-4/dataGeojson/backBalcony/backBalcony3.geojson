@@ -1,0 +1,31 @@
+{
+    "type": "FeatureCollection",
+    "generator": "saigonoperahouse",
+    "copyright": "Saigonoperahouse",
+    "timestamp": "2024-11-11T10:03:07Z",
+    "features": [
+      {
+        "type": "Feature",
+        "properties": {
+          "Building name": "back bacolony 3",
+          "height": 0.05,
+          "idb": "1"
+        },
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+  
+                [106.703495, 10.777079, 10.45],
+                [106.7034818645627, 10.77706457012721 ,10.45],
+                [106.70344766639795, 10.777094212758602 ,10.45],
+                [106.70346, 10.777109, 10.45]
+  
+
+            ]
+          ]
+        },
+        "id": "2"
+      }
+    ]
+  }
